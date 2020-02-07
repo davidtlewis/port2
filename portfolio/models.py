@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 
 class Account(models.Model):
     name = models.CharField(max_length=50)
@@ -45,7 +46,7 @@ class Transaction(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
     tcost = models.DecimalField(max_digits=5, decimal_places=2)
     def __str__(self):
-        return (self.transaction_type + " " + str(self.volume) + " " + self.stock.name)
+        return (self.transaction_type + " " + str(self.volume) + " " + self.stock.code)
 
 class Price(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
@@ -53,3 +54,30 @@ class Price(models.Model):
     price = models.DecimalField(max_digits=7, decimal_places=2)
     def __str__(self):
         return (self.stock.name + " at " + str(self.date) )
+
+class Holding(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
+    volume = models.IntegerField()
+    book_cost = models.DecimalField(max_digits = 10, decimal_places=2)
+    current_value = models.DecimalField(max_digits = 10, decimal_places=2)
+    def __str__(self):
+        return (self.stock.name + " in " + str(self.account.name) )
+
+    def refresh_value(self):
+        
+        #counter =  Transaction.objects.filter(stock__name=self.stock).count()
+        transactions = Transaction.objects.filter(stock__name=self.stock)
+        
+        nett_volume_bought = transactions.filter(transaction_type= 'buy').aggregate(Sum('volume'))['volume__sum']
+        if nett_volume_bought is None: nett_volume_bought = 0
+        
+        nett_volume_sold = transactions.filter(transaction_type= 'sell').aggregate(Sum('volume'))['volume__sum']
+        if nett_volume_sold is None: nett_volume_sold = 0
+         
+        self.volume = nett_volume_bought - nett_volume_sold
+        
+        self.current_value = Price.objects.filter(stock__name=self.stock).latest('date').price * self.volume
+        self.save()
+        
+
