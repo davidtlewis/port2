@@ -25,7 +25,7 @@ class TransactionAdmin(admin.ModelAdmin):
     
 
 class HoldingAdmin(admin.ModelAdmin):
-    list_display = ('account', 'stock', 'volume','current_value')
+    list_display = ('account', 'stock', 'volume','current_value','value_updated')
     list_filter = ('account','stock', )
 
 class StockAdmin(admin.ModelAdmin):

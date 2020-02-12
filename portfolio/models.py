@@ -1,5 +1,9 @@
 from django.db import models
 from django.db.models import Sum
+import requests
+from bs4 import BeautifulSoup
+import locale
+from django.utils import timezone
 
 class Account(models.Model):
     name = models.CharField(max_length=50)
@@ -41,6 +45,32 @@ class Stock(models.Model):
     price_updated = models.DateTimeField(null=True)
     def __str__(self):
         return self.nickname
+    def refresh_value(self):
+        baseurl1 = "https://markets.ft.com/data/"
+        baseurl2 = {
+            "etfs":"etfs/tearsheet/performance?s=",
+            "fund":"funds/tearsheet/performance?s=",
+            "equity":"equities/tearsheet/summary?s="
+        }
+        url = baseurl1 + baseurl2[self.stock_type] + self.code
+        page = requests.get(url)
+        contents = page.content
+        soup = BeautifulSoup(contents, 'html.parser')
+        scrapped_current_price = soup.find_all("span",class_='mod-ui-data-list__value')[0].string
+        current_price = locale.atof(scrapped_current_price)
+        if (self.currency == 'gbx'): current_price = current_price / 100
+        #p = Price(stock = s, price= current_price)
+        #p.save()
+        self.current_price = current_price
+        self.price_updated = timezone.now()
+        self.save()
+        #now to refresh  price !
+        p = Price(stock = self, price= current_price)
+        p.save()
+        #now to refresh related holdings !
+        related_holdings = Holding.objects.filter(stock=self) 
+        for h in related_holdings:
+            h.refresh_value()
     
 class Transaction(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
@@ -70,6 +100,7 @@ class Holding(models.Model):
     volume = models.IntegerField()
     book_cost = models.DecimalField(max_digits = 10, decimal_places=2)
     current_value = models.DecimalField(max_digits = 10, decimal_places=2)
+    value_updated = models.DateTimeField(null=True)
     def __str__(self):
         return (self.stock.name + " in " + str(self.account.name) )
 
@@ -84,4 +115,5 @@ class Holding(models.Model):
          
         self.volume = nett_volume_bought - nett_volume_sold
         self.current_value = Price.objects.filter(stock=self.stock).latest('date').price * self.volume
+        self.value_updated = timezone.now()
         self.save()
