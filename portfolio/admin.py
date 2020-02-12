@@ -6,9 +6,13 @@ class TransactionInline(admin.TabularInline):
     model = Transaction
     extra = 3
 
+class HoldingInline(admin.TabularInline):
+    model = Holding
+    extra = 1
+
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('account_type','name','account_value')
-    inlines = [TransactionInline]
+    inlines = [HoldingInline,TransactionInline]
 
 class PriceAdmin(admin.ModelAdmin):
     list_display = ('date', 'stock', 'price',)
@@ -18,6 +22,7 @@ class TransactionAdmin(admin.ModelAdmin):
     list_display = ('transaction_type','date', 'account', 'stock','volume', 'price','tcost')
     list_filter = ( 'account', 'stock', )
     search_fields = ['stock']
+    
 
 class HoldingAdmin(admin.ModelAdmin):
     list_display = ('account', 'stock', 'volume','current_value')
