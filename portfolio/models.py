@@ -46,6 +46,7 @@ class Stock(models.Model):
     def __str__(self):
         return self.nickname
     def refresh_value(self):
+        locale.setlocale(locale.LC_ALL,'en_US.UTF-8')
         baseurl1 = "https://markets.ft.com/data/"
         baseurl2 = {
             "etfs":"etfs/tearsheet/performance?s=",
