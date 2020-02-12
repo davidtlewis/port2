@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <title>Summary</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    </head>
+    <body>
+        <h2>The total is result. {{ totals.account_value__sum }}</h2>
+        <ul>
+            {% for account in accounts %}
+                <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a>{{account.name}} {{account.account_value}}</li>
+            {% endfor %}
+            </ul>
+                
+    </body>
+</html>
+
+
+    <ul>
+    {% for question in latest_question_list %}
+        <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>

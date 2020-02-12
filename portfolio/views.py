@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.urls import path
 from django.http import HttpResponse
 from django.views.generic import ListView
-from .models import Stock, Price, Holding, Transaction
+from .models import Stock, Price, Holding, Transaction, Account
 from django_tables2 import SingleTableView
 from .tables import StockTable, HoldingTable, TransactionTable, PriceTable
+from django.db.models import Sum
 
 def home(request):
     return HttpResponse("Hello, Django!")
@@ -28,3 +29,10 @@ class TransactionListView(SingleTableView):
     model = Transaction
     table_class = TransactionTable
     template_name = 'portfolio/transactions.html'
+
+def summary(request):
+    totals = Account.objects.aggregate(Sum('account_value'))
+    accounts = Account.objects.all()
+    return render(request, 'portfolio/summary.html', {
+        'totals': totals, 'accounts':accounts,
+    }, )

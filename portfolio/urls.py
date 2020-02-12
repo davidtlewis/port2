@@ -8,4 +8,5 @@ urlpatterns = [
     path("prices/", PriceListView.as_view()),
     path("transactions/", TransactionListView.as_view()),
     path("holdings/", HoldingListView.as_view()),
+    path("summary/", views.summary),
 ]
