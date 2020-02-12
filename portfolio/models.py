@@ -9,13 +9,22 @@ class Account(models.Model):
         ('standard','STANDARD'),
     )
     account_type = models.CharField(max_length=8, choices=ACCOUNT_TYPE, default='buy')
+    account_value = models.DecimalField(max_digits=9, decimal_places=2, default = 0)
     
     def __str__(self):
         return self.name
 
+    def refresh_value(self):
+        holdings = Holding.objects.filter(account=self)
+        account_value = holdings.aggregate(Sum('current_value'))['current_value__sum']
+        if account_value is None: account_value = 0
+        self.account_value = account_value
+        self.save()
+
 class Stock(models.Model):
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=20)
+    nickname = models.CharField(max_length=40)
     CURRENCY_TYPE = (
         ('gbp','GBP'),
         ('gbx','GBX'),
@@ -31,7 +40,7 @@ class Stock(models.Model):
     current_price = models.DecimalField(max_digits=7, decimal_places=2)
     price_updated = models.DateTimeField(null=True)
     def __str__(self):
-        return self.code + ": " + self.name[:15]
+        return self.nickname
     
 class Transaction(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
@@ -43,8 +52,8 @@ class Transaction(models.Model):
     date = models.DateField()
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
     volume = models.IntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    tcost = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.DecimalField(max_digits=5, decimal_places=2,default=0)
+    tcost = models.DecimalField(max_digits=5, decimal_places=2,default=0)
     def __str__(self):
         return (self.transaction_type + " " + str(self.volume) + " " + self.stock.code)
 

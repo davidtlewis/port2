@@ -7,6 +7,7 @@ class TransactionInline(admin.TabularInline):
     extra = 3
 
 class AccountAdmin(admin.ModelAdmin):
+    list_display = ('account_type','name','account_value')
     inlines = [TransactionInline]
 
 class PriceAdmin(admin.ModelAdmin):
@@ -14,12 +15,19 @@ class PriceAdmin(admin.ModelAdmin):
     list_filter = ('stock', )
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('date', 'account', 'stock',)
-    list_filter = ('stock', )
+    list_display = ('transaction_type','date', 'account', 'stock','volume', 'price','tcost')
+    list_filter = ( 'account', 'stock', )
+    search_fields = ['stock']
 
 class HoldingAdmin(admin.ModelAdmin):
     list_display = ('account', 'stock', 'volume','current_value')
-    list_filter = ('stock', )
+    list_filter = ('account','stock', )
+
+class StockAdmin(admin.ModelAdmin):
+    list_display = ('name', 'nickname','code', 'stock_type','current_price')
+    list_filter = ('stock_type', )
+    #list_editable = ('nickname',)
+
 
 
 admin.site.register(Account, AccountAdmin)
@@ -28,4 +36,4 @@ admin.site.register(Price, PriceAdmin)
 admin.site.register(Holding, HoldingAdmin)
 
 admin.site.register(Transaction, TransactionAdmin)
-admin.site.register(Stock)
+admin.site.register(Stock, StockAdmin)
