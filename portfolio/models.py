@@ -31,7 +31,7 @@ class Stock(models.Model):
     current_price = models.DecimalField(max_digits=7, decimal_places=2)
     price_updated = models.DateTimeField(null=True)
     def __str__(self):
-        return self.name
+        return self.code + ": " + self.name[:15]
     
 class Transaction(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
@@ -65,10 +65,8 @@ class Holding(models.Model):
         return (self.stock.name + " in " + str(self.account.name) )
 
     def refresh_value(self):
-        
         #counter =  Transaction.objects.filter(stock__name=self.stock).count()
-        transactions = Transaction.objects.filter(stock__name=self.stock)
-        
+        transactions = Transaction.objects.filter(stock=self.stock).filter(account=self.account)
         nett_volume_bought = transactions.filter(transaction_type= 'buy').aggregate(Sum('volume'))['volume__sum']
         if nett_volume_bought is None: nett_volume_bought = 0
         
@@ -76,8 +74,5 @@ class Holding(models.Model):
         if nett_volume_sold is None: nett_volume_sold = 0
          
         self.volume = nett_volume_bought - nett_volume_sold
-        
-        self.current_value = Price.objects.filter(stock__name=self.stock).latest('date').price * self.volume
+        self.current_value = Price.objects.filter(stock=self.stock).latest('date').price * self.volume
         self.save()
-        
-
