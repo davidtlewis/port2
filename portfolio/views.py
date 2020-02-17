@@ -6,6 +6,7 @@ from .models import Stock, Price, Holding, Transaction, Account
 from django_tables2 import SingleTableView
 from .tables import StockTable, HoldingTable, TransactionTable, PriceTable
 from django.db.models import Sum
+from .forms import TransactionForm
 
 def home(request):
     return HttpResponse("Hello, Django!")
@@ -33,9 +34,8 @@ class TransactionListView(SingleTableView):
 def summary(request):
     totals = Account.objects.aggregate(Sum('account_value'))
     accounts = Account.objects.all()
-    accounts['totals'] = totals
     return render(request, 'portfolio/summary.html', {
-        'totals': totals, 'accounts':accounts,
+    'totals': totals, 'accounts':accounts,
     }, )
 
 class AccountListView(ListView):
@@ -49,7 +49,11 @@ class AccountDetailView(DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        transaction_list = Transaction.objects.all() 
-        #Transactions = Transaction.objects.filter(account__id=self.object.id)
+        #transaction_list = Transaction.objects.all() 
+        transaction_list = Transaction.objects.filter(account__id=self.object.id)
         context['transaction_list'] = transaction_list
         return context
+
+def transaction_new(request):
+    form = TransactionForm()
+    return render(request, 'portfolio/transaction_edit.html', {'form': form})

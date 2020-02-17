@@ -9,15 +9,10 @@
         <p></p>Account: {{object.name}}</p>
         <p>Value: {{object.account_value}}</p>
         <p>Value: {{object.account_type}}</p>
-        <table>
+        <ul>
             {% for t in transaction_list %}
-                <tr>
-                    <td>{{ t.stock }}</td>
-                    <td>type: {{t.transaction_type }} </td>
-                    <td>volume: {{t.volume}} </td>
-                   
-                </tr>
-             {% endfor %}
-        </table>
+                <li>{{ t.stock }} type: {{ t.transaction_type }} </li>
+            {% endfor %}
+        </ul>
     </body>
 </html>
