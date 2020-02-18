@@ -67,6 +67,10 @@ class TransactionDetailView(DetailView):
     model = Transaction
     template_name = 'portfolio/transaction_detail.html'
 
+class HoldingDetailView(DetailView):
+    model = Holding
+    template_name = 'portfolio/holding_detail.html'
+
 
 class StockDetailView(DetailView):
     model = Stock
