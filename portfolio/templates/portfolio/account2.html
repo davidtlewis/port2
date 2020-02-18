@@ -1,0 +1,9 @@
+{% extends 'portfolio/base.html' %}
+{% block content %}
+        <h2>Publishers</h2>
+    <ul>
+        {% for account in object_list %}
+            <li>{{ account.name }} type: {{ account.account_type }} value: {{ account.account_value }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

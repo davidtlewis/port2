@@ -4,12 +4,14 @@ from portfolio.views import StockListView, PriceListView, TransactionListView, H
 
 urlpatterns = [
     path("", views.home, name="home"),
-    path("stocks/", StockListView.as_view()),
-    path("prices/", PriceListView.as_view()),
-    path("transactions/", TransactionListView.as_view()),
-    path("holdings/", HoldingListView.as_view()),
+    path("stock/", StockListView.as_view()),
+    path("price/", PriceListView.as_view()),
+    path("transaction/", TransactionListView.as_view()),
+    path("holding/", HoldingListView.as_view()),
     path("summary/", views.summary),
     path("account/", AccountListView.as_view()),
-    path('account/<int:pk>', views.AccountDetailView.as_view(), name='account-detail'),
+    path('account/<int:pk>', AccountDetailView.as_view(), name='account_detail'),
+    path('transaction/<int:pk>', views.TransactionDetailView.as_view(), name='transaction_detail'),
+    path('stock/<int:pk>', views.StockDetailView.as_view(), name='stock_detail'),
     path('transaction/new/', views.transaction_new, name='transaction_new'),
 ]

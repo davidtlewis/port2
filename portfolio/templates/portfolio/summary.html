@@ -1,18 +1,9 @@
-<html>
-    <head>
-        <title>Summary</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-    </head>
-    <body>
+{% extends 'portfolio/base.html' %}
+{% block content %}
         <h2>The total is result. {{ totals.account_value__sum }}</h2>
         <ul>
             {% for account in accounts %}
-            <li><a href="/account/{{ account.id}}pip3 ">{{ account.name }}</a> {{account.account_value}}</li>
+            <li><a href="/account/{{ account.id}}">{{ account.name }}</a> {{account.account_value}}</li>
             {% endfor %}
         </ul>
-                
-    </body>
-</html>
-
-
- 
+{% endblock %}

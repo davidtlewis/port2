@@ -1,11 +1,14 @@
 import django_tables2 as tables
-from .models import Stock, Price, Holding, Transaction
+from .models import Stock, Price, Holding, Transaction, Account
+from django_tables2 import A
+
 
 class StockTable(tables.Table):
     class Meta:
         model = Stock
         template_name = "django_tables2/bootstrap.html"
-        fields = ('code','name', 'stock_type', 'current_price','price_updated')
+        fields = ('nickname','code','name', 'stock_type', 'current_price','price_updated')
+    nickname = tables.LinkColumn("stock_detail", args=[A("pk")])
 
 class PriceTable(tables.Table):
     class Meta:
@@ -19,11 +22,18 @@ class HoldingTable(tables.Table):
         model = Holding
         template_name = "django_tables2/bootstrap.html"
         fields = ('account','stock', 'volume', 'book_cost','current_value')
-        #fields = ('volume', 'book_cost','current_value')
+    account = tables.LinkColumn("holding_detail", args=[A("pk")])
 
 class TransactionTable(tables.Table):
     class Meta:
         model = Transaction
         template_name = "django_tables2/bootstrap.html"
-        fields = ('account','stock','transaction_type', 'date', 'volume','price','tcost')
-        #fields = ('tcost', )
+        fields = ('stock','account','transaction_type', 'date', 'volume','price','tcost')
+    stock = tables.LinkColumn("transaction_detail", args=[A("pk")])
+
+class AccountTable(tables.Table):
+    class Meta:
+        model = Account
+        template_name = "django_tables2/bootstrap.html"
+        fields = ('name','account_type','account_value')
+    name = tables.LinkColumn("account_detail", args=[A("pk")])
