@@ -7,3 +7,4 @@ class Command(BaseCommand):
 
         for h in Holding.objects.all():
             h.refresh_value()
+            

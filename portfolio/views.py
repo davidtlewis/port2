@@ -46,22 +46,16 @@ def summary(request):
     'totals': totals, 'accounts':accounts,
     }, )
 
-"""class AccountListView(ListView):
-    model = Account
-    template_name = 'portfolio/account.html'
-"""
-
 class AccountDetailView(DetailView):
     model = Account
     template_name = 'portfolio/account_detail.html'
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
+    """def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #transaction_list = Transaction.objects.all() 
-        transaction_list = Transaction.objects.filter(account__id=self.object.id)
-        context['transaction_list'] = transaction_list
+        holding_list = Account..objects.all()
+        context['holding_list'] = holding_list
         return context
+"""
 
 class TransactionDetailView(DetailView):
     model = Transaction
@@ -70,7 +64,14 @@ class TransactionDetailView(DetailView):
 class HoldingDetailView(DetailView):
     model = Holding
     template_name = 'portfolio/holding_detail.html'
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transaction_list = Transaction.objects.filter(account=self.object.account).filter(stock=self.object.stock)
+        #transaction_list = Transaction.objects.filter(stock=self.stock)
+        #transaction_list = Transaction.objects.all()
+        context['transaction_list'] = transaction_list
+        return context
 
 class StockDetailView(DetailView):
     model = Stock

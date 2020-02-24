@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import locale
 from django.utils import timezone
+from django.urls import reverse
 
 class Account(models.Model):
     name = models.CharField(max_length=50)
@@ -17,6 +18,10 @@ class Account(models.Model):
     
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular  instance."""
+        return reverse('account_detail', args=[str(self.id)])
 
     def refresh_value(self):
         holdings = Holding.objects.filter(account=self)
@@ -45,6 +50,11 @@ class Stock(models.Model):
     price_updated = models.DateTimeField(null=True)
     def __str__(self):
         return self.nickname
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular  instance."""
+        return reverse('stock_detail', args=[str(self.id)])
+
     def refresh_value(self):
         locale.setlocale(locale.LC_ALL,'en_US.UTF-8')
         baseurl1 = "https://markets.ft.com/data/"
@@ -87,6 +97,8 @@ class Transaction(models.Model):
     tcost = models.DecimalField(max_digits=5, decimal_places=2,default=0)
     def __str__(self):
         return (self.transaction_type + " " + str(self.volume) + " " + self.stock.code)
+    def get_absolute_url(self):
+        return reverse('transaction_detail', args=[str(self.id)])
 
 class Price(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
@@ -104,6 +116,9 @@ class Holding(models.Model):
     value_updated = models.DateTimeField(null=True)
     def __str__(self):
         return (self.stock.name + " in " + str(self.account.name) )
+
+    def get_absolute_url(self):
+        return reverse('holding_detail', args=[str(self.id)])
 
     def refresh_value(self):
         #counter =  Transaction.objects.filter(stock__name=self.stock).count()

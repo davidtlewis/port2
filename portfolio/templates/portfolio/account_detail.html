@@ -1,17 +1,17 @@
 {% extends 'portfolio/base.html' %}
 {% block content %}
         <h2>Account</h2>
-        <p></p>Account: {{object.name}}</p>
-        <p>Value: {{object.account_value}}</p>
-        <p>Value: {{object.account_type}}</p>
+        <p></p>Account: {{account.name}}</p>
+        <p>Value: {{account.account_value}}</p>
+        <p>Value: {{account.account_type}}</p>
         <table>
-            {% for t in transaction_list %}
+            {% for h in account.holding_set.all %}
                 <tr>
-                    <td>{{ t.stock }}</td>
-                    <td>type: {{t.transaction_type }} </td>
-                    <td>volume: {{t.volume}} </td>
+                    <td><a href="{{ h.get_absolute_url }}">{{ h.stock }}</a> </td>
+                    <td>volume: {{h.volume }} </td>
+                    <td>value: {{h.current_value}} </td>
                    
-                </tr>
+                </tr>   
              {% endfor %}
         </table>
 {% endblock %}

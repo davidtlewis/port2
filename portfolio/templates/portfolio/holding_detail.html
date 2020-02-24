@@ -1,10 +1,31 @@
 {% extends 'portfolio/base.html' %}
 {% block content %}
-        <h2>Transaction</h2>
-        <p>Value: {{object.account}}</p>
-        <p>Value: {{object.stock}}</p>
-        <p>Value: {{object.volume}}</p>
-        <p>Value: {{object.book_cost}}</p>
+        <h2>Holding</h2>
+        <p>Account: {{object.account}}</p>
+        <p>Stock: {{object.stock}}</p>
+        <p>Volume: {{object.volume}}</p>
+        <p>Cost: {{object.book_cost}}</p>
         <p>Value: {{object.current_value}}</p>
-        <p>Value: {{object.value_updated}}</p>
+        <p>When updated: {{object.value_updated}}</p>
+        <table>
+                <tr>
+                        <th>Transaction Date</th>
+                        <th>Transaction Type<th>Transaction Type</th>
+                        <th>Transaction Type</th>
+                        
+                        <th>Purchase Price</th>
+                        <th>Volume</th>
+                        <th>Transaction Cost</th>
+                </tr>
+        {% for t in transaction_list %}
+                <tr>
+                    <td><a href="{{ t.get_absolute_url }}">{{ t.date }}</a> </td>
+                    
+                    <td>{{ t.transaction_type }}</td>
+                    <td>{{ t.price }}</td>
+                    <td>{{ t.volume }}</td>
+                    <td>{{ t.tcost }}</td>
+                </tr>
+             {% endfor %}
+        </table>
 {% endblock %}
