@@ -48,11 +48,14 @@ class Stock(models.Model):
     stock_type = models.CharField(max_length=6, choices=STOCK_TYPE, default='equity')
     current_price = models.DecimalField(max_digits=7, decimal_places=2)
     price_updated = models.DateTimeField(null=True)
+
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.nickname
 
     def get_absolute_url(self):
-        """Returns the url to access a particular  instance."""
         return reverse('stock_detail', args=[str(self.id)])
 
     def refresh_value(self):
@@ -95,6 +98,9 @@ class Transaction(models.Model):
     volume = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2,default=0)
     tcost = models.DecimalField(max_digits=5, decimal_places=2,default=0)
+
+    class Meta:
+        ordering = ['-date']
     def __str__(self):
         return (self.transaction_type + " " + str(self.volume) + " " + self.stock.code)
     def get_absolute_url(self):
@@ -104,6 +110,10 @@ class Price(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
     date =  models.DateTimeField(auto_now_add=True, blank=True)
     price = models.DecimalField(max_digits=7, decimal_places=2)
+
+    class Meta:
+        ordering = ['-date','stock']
+
     def __str__(self):
         return (self.stock.name + " at " + str(self.date) )
 
@@ -114,6 +124,10 @@ class Holding(models.Model):
     book_cost = models.DecimalField(max_digits = 10, decimal_places=2)
     current_value = models.DecimalField(max_digits = 10, decimal_places=2)
     value_updated = models.DateTimeField(null=True)
+
+    class Meta:
+        ordering = ['stock']
+
     def __str__(self):
         return (self.stock.name + " in " + str(self.account.name) )
 
