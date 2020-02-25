@@ -78,7 +78,7 @@ class Stock(models.Model):
         self.current_price = current_price
         self.price_updated = timezone.now()
         self.save()
-        #now to refresh  price !
+        #now create price history record
         p = Price(stock = self, price= current_price)
         p.save()
         #now to refresh related holdings !
@@ -135,6 +135,20 @@ class Holding(models.Model):
         return reverse('holding_detail', args=[str(self.id)])
 
     def refresh_value(self):
+        #counter =  Transaction.objects.filter(stock__name=self.stock).count()
+        transactions = Transaction.objects.filter(stock=self.stock).filter(account=self.account)
+        nett_volume_bought = transactions.filter(transaction_type= 'buy').aggregate(Sum('volume'))['volume__sum']
+        if nett_volume_bought is None: nett_volume_bought = 0
+        
+        nett_volume_sold = transactions.filter(transaction_type= 'sell').aggregate(Sum('volume'))['volume__sum']
+        if nett_volume_sold is None: nett_volume_sold = 0
+         
+        self.volume = nett_volume_bought - nett_volume_sold
+        self.current_value = Price.objects.filter(stock=self.stock).latest('date').price * self.volume
+        self.value_updated = timezone.now()
+        self.save()
+
+    def refresh_value_old(self):
         #counter =  Transaction.objects.filter(stock__name=self.stock).count()
         transactions = Transaction.objects.filter(stock=self.stock).filter(account=self.account)
         nett_volume_bought = transactions.filter(transaction_type= 'buy').aggregate(Sum('volume'))['volume__sum']

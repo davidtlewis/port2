@@ -23,6 +23,7 @@ class PriceListView(SingleTableView):
     model = Price
     table_class = PriceTable
     template_name = 'portfolio/price.html'
+    paginate_by = 10
 
 class HoldingListView(SingleTableView):
     model = Holding
@@ -33,6 +34,7 @@ class TransactionListView(SingleTableView):
     model = Transaction
     table_class = TransactionTable
     template_name = 'portfolio/transaction.html'
+    paginate_by = 10
 
 class AccountListView(SingleTableView):
     model = Account
