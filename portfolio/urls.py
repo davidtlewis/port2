@@ -14,4 +14,5 @@ urlpatterns = [
     path('transaction/<int:pk>', views.TransactionDetailView.as_view(), name='transaction_detail'),
     path('stock/<int:pk>', views.StockDetailView.as_view(), name='stock_detail'),
     path('transaction/new/', views.transaction_new, name='transaction_new'),
+    path('commands/', views.command, name='commandform'),
 ]

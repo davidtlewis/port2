@@ -1,14 +1,17 @@
 from django.shortcuts import render
-from django.urls import path
-from django.http import HttpResponse
-from django.views.generic import ListView, DetailView
+from django.urls import path, reverse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic import ListView, DetailView, TemplateView
 from .models import Stock, Price, Holding, Transaction, Account
 from django_tables2 import SingleTableView
 
 from .tables import StockTable, HoldingTable, TransactionTable, PriceTable, AccountTable
 from django.db.models import Sum
-from .forms import TransactionForm
+from .forms import TransactionForm, CommandForm
 from django.shortcuts import redirect
+from django.core import management
+from django.contrib.auth.decorators import login_required
+
 
 def home(request):
     return HttpResponse("Hello, Django!")
@@ -95,3 +98,35 @@ def transaction_new(request):
     else:
         form = TransactionForm()
     return render(request, 'portfolio/transaction_edit.html', {'form': form})
+
+
+"""class CommandView(TemplateView):
+    template_name = "portfolio/commands.html"
+
+    def get(self,request):
+        form = CommandForm()
+        return render(request, self.template_name, {'form':form})
+
+        """
+@login_required
+def command(request):
+    if request.method =='POST':
+        form = CommandForm(request.POST)
+        if form.is_valid():
+            do_get_prices = form.cleaned_data['do_get_prices']
+            do_refresh_accounts = form.cleaned_data['do_refresh_accounts']
+
+
+            if do_get_prices:
+                management.call_command('get_prices')
+            if  do_refresh_accounts:
+                management.call_command('refresh_accounts')
+        return HttpResponseRedirect(reverse('index') )
+
+    else:
+        form = CommandForm()
+        context = {
+            'form': form
+        }
+
+    return render(request,  'portfolio/commands.html', context)

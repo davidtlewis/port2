@@ -11,5 +11,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
                 
         for s in Stock.objects.all():
+            self.stdout.write(self.style.SUCCESS('about to do get price for ' + s.nickname))
             s.refresh_value()
         

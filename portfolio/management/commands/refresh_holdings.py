@@ -6,5 +6,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for h in Holding.objects.all():
-            h.refresh_value()
+            self.stdout.write(self.style.SUCCESS('about to do holdings' + h.name))
+             h.refresh_value()
             
