@@ -2,9 +2,31 @@
 {% block content %}
         <h1>The Portfolio App</h1>
         <h2>The total is result. {{ totals.account_value__sum }}</h2>
-        <ul>
+        <table style="width: 500px;" class="table table-striped table-condensed">
+            <tr>
+                <th style="width: 70%">Account</th>
+                <th style="width: 30%">Total Value</th>
+            </tr>
             {% for account in accounts %}
-            <li><a href="/account/{{ account.id}}">{{ account.name }}</a> {{account.account_value}}</li>
+            <tr>
+                <td><a href="/account/{{ account.id}}">{{ account.name }}</a></td>
+                <td>{{account.account_value}}</td>
+            </tr>
             {% endfor %}
-        </ul>
+        </table>
+
+        <h2>By Account Type</h2>
+        <table  style="width: 500px;" class="table table-striped table-condensed">
+            <tr>
+                <th style="width: 70%">Type</th>
+                <th style="width: 30%">Total Value</th>
+            </tr>
+            {% for account_by_type in accounts_by_type %}
+            <tr>
+                <td>{{ account_by_type.account_type }}</td>
+                <td>{{account_by_type.total_value}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        
 {% endblock %}
