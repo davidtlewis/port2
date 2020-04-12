@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'debug_toolbar',
     'crispy_forms',
+    'django_filters',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [

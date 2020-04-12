@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, TemplateView
 from .models import Stock, Price, Holding, Transaction, Account
 from django_tables2 import SingleTableView
+from django_tables2.views import SingleTableMixin
+from django_filters.views import FilterView
 
 from .tables import StockTable, HoldingTable, TransactionTable, PriceTable, AccountTable
 from django.db.models import Sum
@@ -11,6 +13,7 @@ from .forms import TransactionForm, CommandForm
 from django.shortcuts import redirect
 from django.core import management
 from django.contrib.auth.decorators import login_required
+from .filters import HoldingByAccountFilter, TransactionByAccountFilter
 
 
 def home(request):
@@ -28,6 +31,12 @@ class PriceListView(SingleTableView):
     template_name = 'portfolio/price.html'
     paginate_by = 10
 
+class HoldingListViewFiltered(SingleTableMixin, FilterView):
+    model = Holding
+    table_class = HoldingTable
+    template_name = 'portfolio/holding.html'
+    filterset_class = HoldingByAccountFilter
+
 class HoldingListView(SingleTableView):
     model = Holding
     table_class = HoldingTable
@@ -38,6 +47,14 @@ class TransactionListView(SingleTableView):
     table_class = TransactionTable
     template_name = 'portfolio/transaction.html'
     paginate_by = 10
+
+class TransactionListViewFiltered(SingleTableMixin, FilterView):
+    model = Transaction
+    table_class = TransactionTable
+    template_name = 'portfolio/transaction.html'
+    filterset_class = TransactionByAccountFilter
+
+
 
 class AccountListView(SingleTableView):
     model = Account
