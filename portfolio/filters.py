@@ -11,4 +11,4 @@ class TransactionByAccountFilter(django_filters.FilterSet):
 class HoldingByAccountFilter(django_filters.FilterSet):
     class Meta:
         model = Holding
-        fields = ['account',]
+        fields = ['account','account__person']
