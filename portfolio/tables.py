@@ -21,8 +21,10 @@ class HoldingTable(tables.Table):
     class Meta:
         model = Holding
         template_name = "django_tables2/bootstrap.html"
-        fields = ('account','stock', 'volume', 'book_cost','current_value')
+        fields = ('account','stock', 'volume', 'book_cost')
     account = tables.LinkColumn("holding_detail", args=[A("pk")])
+    current_value = tables.Column(footer=lambda table: sum(x.current_value for x in table.data)
+)
 
 class TransactionTable(tables.Table):
     class Meta:
