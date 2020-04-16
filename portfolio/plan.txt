@@ -1,0 +1,33 @@
+Unilever    https://uk.finance.yahoo.com/quote/ULVR.L/history?period1=1555241504&period2=1586863904&interval=1d&filter=history&frequency=1d
+lloyds pref NO
+Ishares property    https://uk.finance.yahoo.com/quote/IUKP.L/history?period1=1555242352&period2=1586864752&interval=1d&filter=history&frequency=1d
+Vanguard UKL Gilt   https://uk.finance.yahoo.com/quote/VGOV.L/history?period1=1555242352&period2=1586864752&interval=1d&filter=history&frequency=1d
+
+Dividends:  https://uk.finance.yahoo.com/quote/IUKP.L/history?period1=1555415328&period2=1587037728&interval=div%7Csplit&filter=div&frequency=1d
+
+funds on Yahoo
+
+Premier Ethical  https://uk.finance.yahoo.com/quote/0P00000DC1.L/history?p=0P00000DC1.L
+
+fundsmith 
+
+
+ https://uk.finance.yahoo.com/quote/0P0000RU81.L/history?p=0P0000RU81.L&.tsrc=fin-srch
+
+
+
+PLAN
+
+Create new historic_price table. (sturcture as per yahoo)
+Create new stock_dividend table (date, per share return, possibly return given holding)
+Create new fund_performance table (not sure of structure) - applies for ETS and funds - not stocks but I only have unilver and llopyds pref
+Add yahoo ticker symbol to stock table (ate	Open	High	Low	Close*	Adj. close**, )
+
+call function on stock object to populate historic_price between given periods
+    call yahoo page, loop through creating price, and dividend records
+    (this is called manually to catch up, then a perhaps weekly task does a catch up from last date to now )
+
+Call function on stock to refresh fund_performance
+    timestamp, measure (list of allowed values), value, category value) - probably Trailing returns (%) vs. Benchmarks and per annum Annual total return (%) 
+    Management function calls this infrequently
+    No point in refreeshing the annual at allowed

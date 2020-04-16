@@ -1,0 +1,16 @@
+url = "https://uk.finance.yahoo.com/quote/VGOV.L/history?period1=1585699200&period2=1586131200&interval=1d&filter=history&frequency=1d"
+page = requests.get(url)
+contents = page.content
+soup = BeautifulSoup(contents, 'html.parser')
+rows = soup.table.tbody.find_all("tr")
+for table_row in rows:
+    columns = table_row.find_all("td")
+    if len(column) = 7:
+        #save price record
+        maybe use uniqueness of data to stop duplicate being added.
+        date bit - columns[0].text
+    else
+         #save div record
+    
+    
+    
