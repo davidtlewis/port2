@@ -11,6 +11,42 @@ for table_row in rows:
         date bit - columns[0].text
     else
          #save div record
+
     
-    
-    
+Open	High	Low	Close*	Adj. close**	
+
+
+
+ s = Stock.objects.get(pk=2)
+
+
+from django.db import models
+from django.db.models import Sum
+import requests
+from bs4 import BeautifulSoup
+import locale
+from django.utils import timezone
+from django.urls import reverse
+import datetime
+from datetime import datetime
+from portfolio.models import Stock, HistoricPrice
+
+s = Stock.objects.get(pk=11)
+s.get_historic_prices()
+
+works: time.mktime(date.today().timetuple())
+
+
+works:
+from datetime import datetime
+
+# current date and time
+now = datetime.now()
+
+timestamp = datetime.timestamp(now)
+print("timestamp =", timestamp)
+int(timestamp)
+
+datetime.timestamp(now)
+
+datetime.datetime(2020, 3, 10, 0, 0)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Transaction, Stock, Account, Price, Holding, Person
+from .models import Transaction, Stock, Account, Price, Holding, Person, HistoricPrice
 
 class TransactionInline(admin.TabularInline):
     model = Transaction
@@ -17,6 +17,12 @@ class AccountAdmin(admin.ModelAdmin):
 class PriceAdmin(admin.ModelAdmin):
     list_display = ('date', 'stock', 'price',)
     list_filter = ('stock', )
+
+class HistoricPriceAdmin(admin.ModelAdmin):
+    list_display = ('date', 'stock', 'open','high','low','close','adjclose')
+    list_filter = ('stock', )
+
+
 
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('transaction_type','date', 'account', 'stock','volume', 'price','tcost')
@@ -42,6 +48,7 @@ admin.site.register(Account, AccountAdmin)
 admin.site.register(Person, PersonAdmin)
 
 admin.site.register(Price, PriceAdmin)
+admin.site.register(HistoricPrice, HistoricPriceAdmin)
 admin.site.register(Holding, HoldingAdmin)
 
 admin.site.register(Transaction, TransactionAdmin)
