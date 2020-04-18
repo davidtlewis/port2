@@ -182,7 +182,7 @@ class Transaction(models.Model):
     class Meta:
         ordering = ['-date']
     def __str__(self):
-        return (self.transaction_type + " " + str(self.volume) + " " + self.stock.code)
+        return self.transaction_type + " " + str(self.volume) + " " + self.stock.code
     def get_absolute_url(self):
         return reverse('transaction_detail', args=[str(self.id)])
 
@@ -195,7 +195,7 @@ class Price(models.Model):
         ordering = ['-date', 'stock']
 
     def __str__(self):
-        return(self.stock.name + " at " + str(self.date))
+        return self.stock.name + " at " + str(self.date)
 
 class HistoricPrice(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
@@ -210,7 +210,7 @@ class HistoricPrice(models.Model):
         ordering = ['date']
 
     def __str__(self):
-        return(self.stock.name + " at " + str(self.date))
+        return self.stock.name + " at " + str(self.date)
 
 
 
@@ -226,7 +226,7 @@ class Holding(models.Model):
         ordering = ['stock']
 
     def __str__(self):
-        return (self.stock.name + " in " + str(self.account.name))
+        return self.stock.name + " in " + str(self.account.name)
 
     def get_absolute_url(self):
         return reverse('holding_detail', args=[str(self.id)])
