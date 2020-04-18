@@ -9,12 +9,7 @@ funds on Yahoo
 
 Premier Ethical  https://uk.finance.yahoo.com/quote/0P00000DC1.L/history?p=0P00000DC1.L
 
-fundsmith 
-
-
- https://uk.finance.yahoo.com/quote/0P0000RU81.L/history?p=0P0000RU81.L&.tsrc=fin-srch
-
-
+fundsmith : https://uk.finance.yahoo.com/quote/0P0000RU81.L/history?p=0P0000RU81.L&.tsrc=fin-srch
 
 PLAN
 
