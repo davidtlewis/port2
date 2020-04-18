@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Transaction, Stock, Account, Price, Holding, Person, HistoricPrice
+from .models import Transaction, Stock, Account, Price, Holding, Person, HistoricPrice, Dividend
+from datetime import datetime, date
+import time
+
+
+
 
 class TransactionInline(admin.TabularInline):
     model = Transaction
@@ -22,7 +27,9 @@ class HistoricPriceAdmin(admin.ModelAdmin):
     list_display = ('date', 'stock', 'open','high','low','close','adjclose')
     list_filter = ('stock', )
 
-
+class DividendAdmin(admin.ModelAdmin):
+    list_display = ('date', 'stock', 'amount',)
+    list_filter = ('stock', )
 
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('transaction_type','date', 'account', 'stock','volume', 'price','tcost')
@@ -34,14 +41,23 @@ class HoldingAdmin(admin.ModelAdmin):
     list_display = ('account', 'stock', 'volume','current_value','value_updated')
     list_filter = ('account','stock', )
 
-class StockAdmin(admin.ModelAdmin):
-    list_display = ('name', 'nickname','code', 'stock_type','current_price')
-    list_filter = ('stock_type', )
-    #list_editable = ('nickname',)
+def fill_pricehistory(modeladmin, request, queryset):
+    for obj in queryset:
+        obj.get_historic_prices()
+    
+def clear_pricehistory(modeladmin, request, queryset):
+    for obj in queryset:
+        obj.clear_historic_prices()
 
+
+class StockAdmin(admin.ModelAdmin):
+    list_display = ('name', 'nickname','code', 'yahoo_code','stock_type','current_price')
+    list_filter = ('stock_type', )
+    actions = [fill_pricehistory, clear_pricehistory]
+    
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('name', )
-    
+   
 
 
 admin.site.register(Account, AccountAdmin)
@@ -49,6 +65,7 @@ admin.site.register(Person, PersonAdmin)
 
 admin.site.register(Price, PriceAdmin)
 admin.site.register(HistoricPrice, HistoricPriceAdmin)
+admin.site.register(Dividend, DividendAdmin)
 admin.site.register(Holding, HoldingAdmin)
 
 admin.site.register(Transaction, TransactionAdmin)

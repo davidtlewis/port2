@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 import locale
 from django.utils import timezone
 from django.urls import reverse
-from datetime import datetime, date
-
-
+from datetime import datetime, date, timedelta
+import time
+from pandas.tseries.offsets import BDay
 
 class Account(models.Model):
     name = models.CharField(max_length=50)
@@ -46,7 +46,7 @@ class Person(models.Model):
 class Stock(models.Model):
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=20)
-    yahoo_code = models.CharField(max_length=20)
+    yahoo_code = models.CharField(max_length=20, blank=True)
     nickname = models.CharField(max_length=40)
     CURRENCY_TYPE = (
         ('gbp','GBP'),
@@ -100,37 +100,66 @@ class Stock(models.Model):
         for h in related_holdings:
             h.refresh_value()
 
+
     def get_historic_prices(self):
+        if not self.yahoo_code: return 
+        batch = 135
         locale.setlocale(locale.LC_ALL,'en_US.UTF-8')
-        thepast = datetime(2019, 3, 1, 0, 0)
-        from_date = "1554076800"
-        now = datetime.now()
-        to_date = int(datetime.timestamp(now))
         def converttonumber(textin):
             try:
                 return locale.atof(textin)
             except ValueError:
                 return 0
 
-        url = "https://uk.finance.yahoo.com/quote/" + self.yahoo_code + "/history?period1=" + str(from_date) + "&period2=" + str(to_date) + "&interval=1d&filter=history&frequency=1d"
-        #url = "https://uk.finance.yahoo.com/quote/" + "VGOV.L" + "/history?period1=" + "1554076800" + "&period2=" + "1585699200" + "&interval=1d&filter=history&frequency=1d"
-        print(url)
-        page = requests.get(url)
-        contents = page.content
-        soup = BeautifulSoup(contents, 'html.parser')
-        rows = soup.table.tbody.find_all("tr")
-        for table_row in rows:
-            columns = table_row.find_all("td")
-            if len(columns) == 7:
-                #save price record
-                #current_price = locale.atof(scrapped_current_price)
-                #hp = HistoricPrice(stock = self, date=datetime.strptime(columns[0].text,'%d %b %Y'), open=locale.atof(columns[1].text), high=locale.atof(columns[2].text), low=locale.atof(columns[3].text), close=locale.atof(columns[4].text), adjclose=locale.atof(columns[5].text))
-                hp = HistoricPrice(stock = self, date=datetime.strptime(columns[0].text,'%d %b %Y'), open=converttonumber(columns[1].text), high=converttonumber(columns[2].text), low=converttonumber(columns[3].text), close=converttonumber(columns[4].text), adjclose=converttonumber(columns[5].text))
-                hp.save()                   
-                #maybe use uniqueness of data to stop duplicate being added.
-           # else:
-                #save div record
+        today = date.today()
+        #find last date in historicPrices
+        last_date_record = HistoricPrice.objects.filter(stock=self).last()
+        if last_date_record is None:
+            #set default to 1 jan 2017
+            last_date = date(2017, 1, 1)
+        else:
+            last_date = last_date_record.date
+        print ("today:", today, " ;last date:",  last_date)
 
+        from_date = last_date + timedelta(days=1)
+        while from_date < today:
+            to_date = min((from_date + timedelta(days=batch)), today)
+            print ("from:", from_date, " to last date:",  to_date)           
+            endunix = int(time.mktime(to_date.timetuple()))
+            startunix = int(time.mktime(from_date.timetuple()))
+            url = "https://uk.finance.yahoo.com/quote/" + self.yahoo_code + "/history?period1=" + str(startunix) + "&period2=" + str(endunix) + "&interval=1d&filter=history&frequency=1d"
+            print(url)
+            page = requests.get(url)
+            contents = page.content
+            soup = BeautifulSoup(contents, 'html.parser')
+            rows = soup.table.tbody.find_all("tr")
+            print (len(rows))
+            for table_row in rows:
+                columns = table_row.find_all("td")
+                if len(columns) == 7:
+                    #save price record
+                    hp = HistoricPrice(stock = self, date=datetime.strptime(columns[0].text,'%d %b %Y'), open=converttonumber(columns[1].text), high=converttonumber(columns[2].text), low=converttonumber(columns[3].text), close=converttonumber(columns[4].text), adjclose=converttonumber(columns[5].text))
+                    hp.save()                   
+                    #maybe use uniqueness of data to stop duplicate being added.
+                if len(columns) == 2:
+                    #save div record
+                    amount_text = columns[1].strong.text
+                    div = Dividend(stock = self, date=datetime.strptime(columns[0].text,'%d %b %Y'), amount=converttonumber(amount_text) )
+                    div.save() 
+            #get ready for next loop
+            from_date = to_date + + timedelta(days=1)
+
+    
+    def clear_historic_prices(self):
+        HistoricPrice.objects.filter(stock = self).delete()
+        Dividend.objects.filter(stock = self).delete()
+
+class Dividend(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
+    date =  models.DateField(blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=8)
+    class Meta:
+        ordering = ['-date',]
     
 class Transaction(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
@@ -165,7 +194,7 @@ class Price(models.Model):
 
 class HistoricPrice(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
-    date =  models.DateTimeField(blank=True)
+    date =  models.DateField(blank=True)
     open = models.DecimalField(max_digits=7, decimal_places=2)
     high = models.DecimalField(max_digits=7, decimal_places=2)
     low  = models.DecimalField(max_digits=7, decimal_places=2)
@@ -173,7 +202,7 @@ class HistoricPrice(models.Model):
     adjclose = models.DecimalField(max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ['-date','stock']
+        ordering = ['date']
 
     def __str__(self):
         return (self.stock.name + " at " + str(self.date) )

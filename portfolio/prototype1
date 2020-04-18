@@ -50,3 +50,12 @@ int(timestamp)
 datetime.timestamp(now)
 
 datetime.datetime(2020, 3, 10, 0, 0)
+
+HistoricPrice.objects.filter(stock__nickname="Artemis Euro Opps Fund").last().date
+HistoricPrice.objects.filter(stock__nickname="Llyods Pref Share").last().date
+testhp = HistoricPrice.objects.filter(stock__nickname="Llyods Pref Share").last()
+
+
+if testhp is None: print("it is none")
+
+Fixing the date stuff
