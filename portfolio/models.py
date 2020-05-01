@@ -104,7 +104,6 @@ class Stock(models.Model):
         for h in related_holdings:
             h.refresh_value()
 
-
     def get_historic_prices(self):
         if not self.yahoo_code:
             return
@@ -118,27 +117,24 @@ class Stock(models.Model):
 
         today = date.today()
         #find last date in historicPrices
-        last_date_record = HistoricPrice.objects.filter(stock=self).last()
+        last_date_record = HistoricPrice.objects.filter(stock=self).first()
         if last_date_record is None:
             #set default to 1 jan 2017
             last_date = date(2017, 1, 1)
         else:
             last_date = last_date_record.date
-        print("today:", today, ", last date:", last_date)
-
+        print(">>>filling from ", last_date, "to ", today,)
         from_date = last_date + timedelta(days=1)
         while from_date < today:
             to_date = min((from_date + timedelta(days=batch)), today)
-            print("from:", from_date, " to last date:", to_date)
             endunix = int(time.mktime(to_date.timetuple()))
             startunix = int(time.mktime(from_date.timetuple()))
             url = "https://uk.finance.yahoo.com/quote/" + self.yahoo_code + "/history?period1=" + str(startunix) + "&period2=" + str(endunix) + "&interval=1d&filter=history&frequency=1d"
-            print(url)
             page = requests.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
             rows = soup.table.tbody.find_all("tr")
-            print(len(rows))
+            print("from:", from_date, " to :", to_date, ". Records returned: ", len(rows), url)
             for table_row in rows:
                 columns = table_row.find_all("td")
                 if len(columns) == 7:
@@ -207,7 +203,7 @@ class HistoricPrice(models.Model):
     adjclose = models.DecimalField(max_digits=7, decimal_places=2)
 
     class Meta:
-        ordering = ['date']
+        ordering = ['-date']
 
     def __str__(self):
         return self.stock.name + " at " + str(self.date)

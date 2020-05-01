@@ -26,7 +26,7 @@ class StockListView(SingleTableView):
     model = Stock
     table_class = StockTable
     template_name = 'portfolio/stock.html'
-    
+
 class PriceListView(SingleTableView):
     model = Price
     table_class = PriceTable
@@ -101,7 +101,7 @@ class TransactionDetailView(DetailView):
 class HoldingDetailView(DetailView):
     model = Holding
     template_name = 'portfolio/holding_detail.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         transaction_list = Transaction.objects.filter(account=self.object.account).filter(stock=self.object.stock)
@@ -148,25 +148,18 @@ def command(request):
             do_get_prices = form.cleaned_data['do_get_prices']
             do_refresh_accounts = form.cleaned_data['do_refresh_accounts']
             do_get_history = form.cleaned_data['do_get_history']
-            do_get_history_v2 = form.cleaned_data['do_get_history_v2']
-            do_clear_history = form.cleaned_data['do_clear_history']
 
             if do_get_prices:
                 management.call_command('get_prices')
-            if  do_refresh_accounts:
+            if do_refresh_accounts:
                 management.call_command('refresh_accounts')
-            if  do_get_history:
-                s = Stock.objects.get(pk=11)
-                today = date.today() 
-                s.get_historic_prices()
-            if  do_get_history_v2:
-                s = Stock.objects.get(pk=11)
-                #s.get_historic_prices_v2()
-            if  do_clear_history:
-                s = Stock.objects.get(pk=11)
-                s.clear_historic_prices()
-        return HttpResponseRedirect(reverse('commandform') )
+            if do_get_history:
+                stocks = Stock.objects.all()
+                today = date.today()
+                for stock in stocks:
+                    stock.get_historic_prices()
 
+        return HttpResponseRedirect(reverse('commandform') )
     else:
         form = CommandForm()
         context = {

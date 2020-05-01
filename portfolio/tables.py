@@ -21,8 +21,7 @@ class HistoricPriceTable(tables.Table):
     class Meta:
         model = HistoricPrice
         template_name = "django_tables2/bootstrap.html"
-        #fields = ('price' ,)
-        fields = ('date','stock', 'open', 'high', 'low', 'close', 'adjclose',  )
+        fields = ('date', 'stock', 'open', 'high', 'low', 'close', 'adjclose',  )
 
 class DividendTable(tables.Table):
     class Meta:
