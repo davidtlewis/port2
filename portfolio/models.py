@@ -17,10 +17,14 @@ class Account(models.Model):
         ('ISA', 'ISA'),
         ('pension', 'PENSION'),
         ('standard', 'STANDARD'),
+        ('VCT', 'VCT'),
     )
     account_type = models.CharField(max_length=8, choices=ACCOUNT_TYPE, default='buy')
     account_value = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     person = models.ForeignKey('Person', on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        ordering = ['account_type']
 
     def __str__(self):
         return self.name

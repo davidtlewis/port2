@@ -21,7 +21,7 @@ import time
 def home(request):
     return HttpResponse("Hello, Django!")
 
-#class StockListView(SingleTableView):
+
 class StockListView(SingleTableView):
     model = Stock
     table_class = StockTable
@@ -68,8 +68,6 @@ class TransactionListViewFiltered(SingleTableMixin, FilterView):
     template_name = 'portfolio/transaction.html'
     filterset_class = TransactionByAccountFilter
 
-
-
 class AccountListView(SingleTableView):
     model = Account
     table_class = AccountTable
@@ -82,6 +80,15 @@ def summary(request):
     return render(request, 'portfolio/summary.html', {
     'totals': totals, 'accounts':accounts, 'accounts_by_type': accounts_by_type,
     }, )
+
+def summary(request):
+    totals = Account.objects.aggregate(Sum('account_value'))
+    accounts = Account.objects.all()
+    accounts_by_type = Account.objects.values('account_type').annotate(total_value=Sum('account_value'))
+    return render(request, 'portfolio/summary.html', {
+    'totals': totals, 'accounts':accounts, 'accounts_by_type': accounts_by_type,
+    }, )
+
 
 class AccountDetailView(DetailView):
     model = Account
