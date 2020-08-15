@@ -139,7 +139,7 @@ def transaction_new(request):
         form = CommandForm()
         return render(request, self.template_name, {'form':form})
 
-        """
+       """
 @login_required
 def command(request):
     if request.method =='POST':
@@ -166,4 +166,4 @@ def command(request):
             'form': form
         }
 
-    return render(request,  'portfolio/commands.html', context)
+    return render(request, 'portfolio/commands.html', context)

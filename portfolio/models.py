@@ -95,15 +95,10 @@ class Stock(models.Model):
         current_price = locale.atof(scrapped_current_price)
         if self.currency == 'gbx':
             current_price = current_price / 100
-        #p = Price(stock = s, price= current_price)
-        #p.save()
         self.current_price = current_price
         self.price_updated = timezone.now()
         self.save()
-        #now create price history record
-        p = Price(stock=self, price=current_price)
-        p.save()
-        #now to refresh related holdings !
+        #now to refresh  holdings which contain this stock
         related_holdings = Holding.objects.filter(stock=self)
         for h in related_holdings:
             h.refresh_value()
@@ -232,7 +227,7 @@ class Holding(models.Model):
         return reverse('holding_detail', args=[str(self.id)])
 
     def refresh_value(self):
-        #counter =  Transaction.objects.filter(stock__name=self.stock).count()
+        #sum up all relevant tranaction to get current number of shares
         transactions = Transaction.objects.filter(stock=self.stock).filter(account=self.account)
         nett_volume_bought = transactions.filter(transaction_type='buy').aggregate(Sum('volume'))['volume__sum']
         if nett_volume_bought is None:
@@ -243,6 +238,7 @@ class Holding(models.Model):
             nett_volume_sold = 0
 
         self.volume = nett_volume_bought - nett_volume_sold
-        self.current_value = Price.objects.filter(stock=self.stock).latest('date').price * self.volume
+        #self.current_value = Price.objects.filter(stock=self.stock).latest('date').price * self.volume
+        self.current_value = Stock.objects.get(pk=self.stock.id).current_price * self.volume
         self.value_updated = timezone.now()
         self.save()
