@@ -53,7 +53,7 @@ class Person(models.Model):
 class Stock(models.Model):
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=20)
-    yahoo_code = models.CharField(max_length=20, blank=True)
+    yahoo_code = models.CharField(max_length=20, null=True)
     nickname = models.CharField(max_length=40)
     CURRENCY_TYPE = (
         ('gbp', 'GBP'),
@@ -69,6 +69,12 @@ class Stock(models.Model):
     stock_type = models.CharField(max_length=6, choices=STOCK_TYPE, default='equity')
     current_price = models.DecimalField(max_digits=7, decimal_places=2)
     price_updated = models.DateTimeField(null=True)
+    perf_5y = models.DecimalField(max_digits=7,decimal_places=2,null=True)
+    perf_3y = models.DecimalField(max_digits=7,decimal_places=2,null=True)
+    perf_1y = models.DecimalField(max_digits=7,decimal_places=2,null=True)
+    perf_6m = models.DecimalField(max_digits=7,decimal_places=2,null=True)
+    perf_3m = models.DecimalField(max_digits=7,decimal_places=2,null=True)
+    perf_1m = models.DecimalField(max_digits=7,decimal_places=2,null=True)
 
     class Meta:
         ordering = ['name']
@@ -103,6 +109,33 @@ class Stock(models.Model):
         for h in related_holdings:
             h.refresh_value()
 
+    def refresh_perf(self):
+        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+        baseurl1 = "https://markets.ft.com/data/"
+        baseurl2 = {
+            "etfs":"etfs/tearsheet/performance?s=",
+            "fund":"funds/tearsheet/performance?s=",
+            "equity":"equities/tearsheet/summary?s="
+        }
+        if self.stock_type != 'equity':
+            url = baseurl1 + baseurl2[self.stock_type] + self.code
+            page = requests.get(url)
+            contents = page.content
+            soup = BeautifulSoup(contents, 'html.parser')
+            scrapped_5y_perf = soup.find("div", class_='mod-ui-table--freeze-pane__scroll-container').find_all("tr")[1].find_all("td")[1].string
+            if scrapped_5y_perf != '--': self.perf_5y = locale.atof(scrapped_5y_perf[:-1])
+            scrapped_3y_perf = soup.find("div", class_='mod-ui-table--freeze-pane__scroll-container').find_all("tr")[1].find_all("td")[2].string
+            if scrapped_3y_perf != '--': self.perf_3y = locale.atof(scrapped_3y_perf[:-1])
+            scrapped_1y_perf = soup.find("div", class_='mod-ui-table--freeze-pane__scroll-container').find_all("tr")[1].find_all("td")[3].string
+            if scrapped_1y_perf != '--': self.perf_1y = locale.atof(scrapped_1y_perf[:-1])
+            scrapped_6m_perf = soup.find("div", class_='mod-ui-table--freeze-pane__scroll-container').find_all("tr")[1].find_all("td")[4].string
+            if scrapped_6m_perf != '--': self.perf_6m = locale.atof(scrapped_6m_perf[:-1])
+            scrapped_3m_perf = soup.find("div", class_='mod-ui-table--freeze-pane__scroll-container').find_all("tr")[1].find_all("td")[5].string
+            if scrapped_3m_perf != '--': self.perf_3m = locale.atof(scrapped_3m_perf[:-1])
+            scrapped_1m_perf = soup.find("div", class_='mod-ui-table--freeze-pane__scroll-container').find_all("tr")[1].find_all("td")[6].string
+            if scrapped_1m_perf != '--': self.perf_1m = locale.atof(scrapped_1m_perf[:-1])
+            self.save()
+               
     def get_historic_prices(self):
         if not self.yahoo_code:
             return

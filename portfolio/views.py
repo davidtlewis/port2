@@ -148,18 +148,21 @@ def command(request):
             do_get_prices = form.cleaned_data['do_get_prices']
             do_refresh_accounts = form.cleaned_data['do_refresh_accounts']
             do_get_history = form.cleaned_data['do_get_history']
+            do_get_perf = form.cleaned_data['do_get_perf']
 
             if do_get_prices:
                 management.call_command('get_prices')
             if do_refresh_accounts:
                 management.call_command('refresh_accounts')
+            if do_get_perf:
+                management.call_command('get_perf')
             if do_get_history:
                 stocks = Stock.objects.all()
                 today = date.today()
                 for stock in stocks:
                     stock.get_historic_prices()
 
-        return HttpResponseRedirect(reverse('commandform') )
+        return HttpResponseRedirect(reverse('index') )
     else:
         form = CommandForm()
         context = {
