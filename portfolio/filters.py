@@ -11,7 +11,7 @@ class TransactionByAccountFilter(django_filters.FilterSet):
 class HoldingByAccountFilter(django_filters.FilterSet):
     class Meta:
         model = Holding
-        fields = ['account','account__person']
+        fields = ['account','stock','account__person']
 
 class HistoricPriceByStockFilter(django_filters.FilterSet):
     class Meta:
