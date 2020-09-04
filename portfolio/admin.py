@@ -33,7 +33,7 @@ class TransactionAdmin(admin.ModelAdmin):
     search_fields = ['stock']
 
 class HoldingAdmin(admin.ModelAdmin):
-    list_display = ('account', 'stock', 'volume', 'current_value', 'value_updated')
+    list_display = ('account', 'stock', 'volume', 'current_value', 'book_cost', 'value_updated')
     list_filter = ('account', 'stock', )
 
 def fill_pricehistory(modeladmin, request, queryset):

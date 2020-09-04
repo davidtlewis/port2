@@ -8,8 +8,6 @@ from bs4 import BeautifulSoup
 from django.utils import timezone
 from django.urls import reverse
 
-
-
 class Account(models.Model):
     """ this holds the accounts"""
     name = models.CharField(max_length=50)
@@ -69,12 +67,12 @@ class Stock(models.Model):
     stock_type = models.CharField(max_length=6, choices=STOCK_TYPE, default='equity')
     current_price = models.DecimalField(max_digits=7, decimal_places=2)
     price_updated = models.DateTimeField(null=True)
-    perf_5y = models.DecimalField(max_digits=7,decimal_places=2,null=True)
-    perf_3y = models.DecimalField(max_digits=7,decimal_places=2,null=True)
-    perf_1y = models.DecimalField(max_digits=7,decimal_places=2,null=True)
-    perf_6m = models.DecimalField(max_digits=7,decimal_places=2,null=True)
-    perf_3m = models.DecimalField(max_digits=7,decimal_places=2,null=True)
-    perf_1m = models.DecimalField(max_digits=7,decimal_places=2,null=True)
+    perf_5y = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    perf_3y = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    perf_1y = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    perf_6m = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    perf_3m = models.DecimalField(max_digits=7, decimal_places=2, null=True)
+    perf_1m = models.DecimalField(max_digits=7, decimal_places=2, null=True)
 
     class Meta:
         ordering = ['name']
@@ -239,8 +237,6 @@ class HistoricPrice(models.Model):
 
     def __str__(self):
         return self.stock.name + " at " + str(self.date)
-
-
 
 class Holding(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
