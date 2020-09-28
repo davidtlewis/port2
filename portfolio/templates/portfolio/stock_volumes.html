@@ -1,0 +1,16 @@
+{% extends 'portfolio/base.html' %}
+{% block content %}
+        <h1>Stock Volume Summary</h1>
+        <table style="width: 700px;" class="table table-striped table-condensed">
+            <tr>
+                <th style="width: 75%">Stock</th>
+                <th style="width: 25%">Volume</th>
+            </tr>
+            {% for s in stock_volumes %}
+            <tr>
+                <td>{{s.stock__name}}</a></td>
+                <td>{{s.share_volume}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+{% endblock %}

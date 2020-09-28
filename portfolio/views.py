@@ -13,18 +13,20 @@ from django.shortcuts import redirect
 from django.core import management
 from django.contrib.auth.decorators import login_required
 from .filters import HoldingByAccountFilter, TransactionByAccountFilter, HistoricPriceByStockFilter, DividendByStockFilter
-
 from datetime import datetime, date
 import time
 
 def home(request):
     return HttpResponse("Hello, Django!")
 
-
 class StockListView(SingleTableView):
     model = Stock
     table_class = StockTable
     template_name = 'portfolio/stock.html'
+
+def StockVolumesView(request):
+    stock_volumes = Holding.objects.values('stock__name').annotate(share_volume=Sum('volume'))
+    return render(request, 'portfolio/stock_volumes.html', {'stock_volumes': stock_volumes,}, )
 
 class PriceListView(SingleTableView):
     model = Price
@@ -79,8 +81,6 @@ def summary(request):
     return render(request, 'portfolio/summary.html', {
     'totals': totals, 'accounts':accounts, 'accounts_by_type': accounts_by_type,
     }, )
-
-
 
 class AccountDetailView(DetailView):
     model = Account
@@ -137,8 +137,7 @@ def transaction_new(request):
     def get(self,request):
         form = CommandForm()
         return render(request, self.template_name, {'form':form})
-
-       """
+"""
 @login_required
 def command(request):
     if request.method =='POST':
@@ -170,5 +169,4 @@ def command(request):
         context = {
             'form': form
         }
-
     return render(request, 'portfolio/commands.html', context)

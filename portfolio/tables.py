@@ -7,7 +7,7 @@ class StockTable(tables.Table):
     class Meta:
         model = Stock
         template_name = "django_tables2/bootstrap.html"
-        fields = ('nickname','code','name', 'stock_type', 'current_price','price_updated','perf_5y','perf_3y','perf_1y','perf_6m','perf_3m','perf_1m')
+        fields = ('nickname','code','yahoo_code','name', 'stock_type', 'current_price','price_updated','perf_5y','perf_3y','perf_1y','perf_6m','perf_3m','perf_1m')
     nickname = tables.LinkColumn("stock_detail", args=[A("pk")])
 
 class PriceTable(tables.Table):
