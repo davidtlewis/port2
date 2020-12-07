@@ -85,21 +85,23 @@ class Stock(models.Model):
 
     def refresh_value(self):
         locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-        baseurl1 = "https://markets.ft.com/data/"
-        baseurl2 = {
-            "etfs":"etfs/tearsheet/performance?s=",
-            "fund":"funds/tearsheet/performance?s=",
-            "equity":"equities/tearsheet/summary?s="
-        }
-        url = baseurl1 + baseurl2[self.stock_type] + self.code
-        page = requests.get(url)
-        contents = page.content
-        soup = BeautifulSoup(contents, 'html.parser')
-        scrapped_current_price = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
-        current_price = locale.atof(scrapped_current_price)
-        if self.currency == 'gbx':
-            current_price = current_price / 100
-        self.current_price = current_price
+        self.current_price = 0
+        if self.code != "none":
+            baseurl1 = "https://markets.ft.com/data/"
+            baseurl2 = {
+                "etfs":"etfs/tearsheet/performance?s=",
+                "fund":"funds/tearsheet/performance?s=",
+                "equity":"equities/tearsheet/summary?s="
+            }
+            url = baseurl1 + baseurl2[self.stock_type] + self.code
+            page = requests.get(url)
+            contents = page.content
+            soup = BeautifulSoup(contents, 'html.parser')
+            scrapped_current_price = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
+            current_price = locale.atof(scrapped_current_price)
+            if self.currency == 'gbx':
+                current_price = current_price / 100
+            self.current_price = current_price
         self.price_updated = timezone.now()
         self.save()
         #now to refresh  holdings which contain this stock
