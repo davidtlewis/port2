@@ -77,7 +77,9 @@ class AccountListView(SingleTableView):
 def summary(request):
     totals = Account.objects.aggregate(Sum('account_value'))
     accounts = Account.objects.all()
-    accounts_by_type = Account.objects.values('account_type').annotate(total_value=Sum('account_value'))
+    #accounts_by_type = Account.objects.values('account_type').annotate(total_value=Sum('account_value'))
+    a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
+    accounts_by_type = a.values('account_type').annotate(total_value=Sum('account_value'))
     return render(request, 'portfolio/summary.html', {
     'totals': totals, 'accounts':accounts, 'accounts_by_type': accounts_by_type,
     }, )
