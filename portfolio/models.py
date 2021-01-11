@@ -85,7 +85,7 @@ class Stock(models.Model):
 
     def refresh_value(self):
         locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-        self.current_price = 0
+        # self.current_price = 0
         if self.code != "none":
             baseurl1 = "https://markets.ft.com/data/"
             baseurl2 = {
@@ -102,8 +102,8 @@ class Stock(models.Model):
             if self.currency == 'gbx':
                 current_price = current_price / 100
             self.current_price = current_price
-        self.price_updated = timezone.now()
-        self.save()
+            self.price_updated = timezone.now()
+            self.save()
         #now to refresh  holdings which contain this stock
         related_holdings = Holding.objects.filter(stock=self)
         for h in related_holdings:

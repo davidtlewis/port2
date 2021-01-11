@@ -80,8 +80,9 @@ def summary(request):
     #accounts_by_type = Account.objects.values('account_type').annotate(total_value=Sum('account_value'))
     a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
     accounts_by_type = a.values('account_type').annotate(total_value=Sum('account_value'))
+    accounts_by_person = Account.objects.values('person__name').annotate(total_value=Sum('account_value')).order_by('person__name')
     return render(request, 'portfolio/summary.html', {
-    'totals': totals, 'accounts':accounts, 'accounts_by_type': accounts_by_type,
+    'totals': totals, 'accounts':accounts, 'accounts_by_type': accounts_by_type, 'accounts_by_person': accounts_by_person,
     }, )
 
 class AccountDetailView(DetailView):
