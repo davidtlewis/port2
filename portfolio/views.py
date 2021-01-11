@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import path, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import DetailView
 from django_tables2 import SingleTableView
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
