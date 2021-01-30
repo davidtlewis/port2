@@ -173,3 +173,15 @@ def command(request):
             'form': form
         }
     return render(request, 'portfolio/commands.html', context)
+
+def custom_report(request):
+    a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
+    total = a.aggregate(Sum('account_value'))
+    
+    dtl_pension = Account.objects.filter(person__name = "david", account_type = "pension") 
+    
+    a = Account.objects.filter(person__name = "david").exclude(account_type = "pension") | Account.objects.filter(person__name = "henri").exclude(account_type = "pension")
+    accounts_by_type = a.values('account_type').annotate(total_value=Sum('account_value'))
+    return render(request, 'portfolio/custom_report.html', {
+    'total': total, 'dtl_pension':dtl_pension, 'accounts_by_type': accounts_by_type, 
+    }, )

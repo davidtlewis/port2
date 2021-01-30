@@ -1,7 +1,6 @@
+from datetime import datetime
 from django.contrib import admin
 from .models import Transaction, Stock, Account, Price, Holding, Person, HistoricPrice, Dividend
-from datetime import datetime, date
-import time
 
 class TransactionInline(admin.TabularInline):
     model = Transaction
@@ -46,7 +45,7 @@ def clear_pricehistory(modeladmin, request, queryset):
 
 
 class StockAdmin(admin.ModelAdmin):
-    list_display = ('name', 'nickname', 'code', 'yahoo_code', 'stock_type', 'current_price')
+    list_display = ('name', 'nickname', 'code', 'yahoo_code', 'stock_type', 'current_price', 'price_updated')
     list_filter = ('stock_type', )
     actions = [fill_pricehistory, clear_pricehistory]
 
