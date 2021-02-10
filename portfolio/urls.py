@@ -1,6 +1,6 @@
 from django.urls import path
 from portfolio import views
-from portfolio.views import StockListView, PriceListView, TransactionListView, TransactionListViewFiltered, HoldingListView, HoldingListViewFiltered, AccountListView, AccountDetailView, HoldingDetailView, HistoricPriceListView, DividendListView
+from portfolio.views import StockListView, PriceListView, TransactionListView, TransactionListViewFiltered, HoldingListView, HoldingListViewFiltered, AccountListView, AccountDetailView, HoldingDetailView, HistoricPriceListView, DividendListView, StockHoldingView
 
 urlpatterns = [
     path("", views.summary, name="index"),
@@ -21,4 +21,5 @@ urlpatterns = [
     path('transaction/new/', views.transaction_new, name='transaction_new'),
     path('commands/', views.command, name='commandform'),
     path('custom_report/', views.custom_report, name='custom_report'),
+    path("stockHoldingsummary/", views.StockHoldingView, name='stockholdingsummary'),
 ]

@@ -1,0 +1,18 @@
+{% extends 'portfolio/base.html' %}
+{% block content %}
+        <h1>Stock Holdings Summary</h1>
+        <table style="width: 700px;" class="table table-striped table-condensed">
+            <tr>
+                <th style="width: 75%">Stock</th>
+                <th style="width: 25%">performance 1y</th>
+                <th style="width: 25%">Value</th>
+            </tr>
+            {% for s in stock_holding_summary %}
+            <tr>
+                <td>{{s.name}}</a></td>
+                <td>{{s.perf_1y}}</td>
+                <td>{{s.sum_value}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+{% endblock %}

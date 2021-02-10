@@ -6,7 +6,7 @@ from django_tables2 import SingleTableView
 from django_tables2.views import SingleTableMixin
 from django_filters.views import FilterView
 from .models import Stock, Price, Holding, Transaction, Account, HistoricPrice, Dividend
-from .tables import StockTable, HoldingTable, TransactionTable, PriceTable, AccountTable, HistoricPriceTable, DividendTable
+from .tables import StockTable, HoldingTable, TransactionTable, PriceTable, AccountTable, HistoricPriceTable, DividendTable, StockHoldingTable
 from django.db.models import Sum
 from .forms import TransactionForm, CommandForm
 from django.shortcuts import redirect
@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from .filters import HoldingByAccountFilter, TransactionByAccountFilter, HistoricPriceByStockFilter, DividendByStockFilter
 from datetime import datetime, date
 import time
+from django_tables2 import RequestConfig
 
 def home(request):
     return HttpResponse("Hello, Django!")
@@ -28,6 +29,14 @@ def StockVolumesView(request):
     stock_volumes = Holding.objects.values('stock__name').annotate(share_volume=Sum('volume'))
     return render(request, 'portfolio/stock_volumes.html', {'stock_volumes': stock_volumes,}, )
 
+"""def StockHoldingSummary(request):
+    stock_holding_summary = Stock.objects.annotate(sum_value=Sum('holding__current_value'))
+    return render(request, 'portfolio/stock_holding_summary.html', {'stock_holding_summary': stock_holding_summary,}, )"""
+
+def StockHoldingView(request):
+    table = StockHoldingTable(Stock.objects.annotate(sum_value=Sum('holding__current_value')))
+    return render(request, "portfolio/stock_holding_summary2.html",{"table":table})
+    
 class PriceListView(SingleTableView):
     model = Price
     table_class = PriceTable
@@ -166,7 +175,7 @@ def command(request):
                 for stock in stocks:
                     stock.get_historic_prices()
 
-        return HttpResponseRedirect(reverse('index') )
+        return HttpResponseRedirect(reverse('custom_report') )
     else:
         form = CommandForm()
         context = {

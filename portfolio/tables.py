@@ -1,6 +1,7 @@
 import django_tables2 as tables
 from .models import Stock, Price, Holding, Transaction, Account, HistoricPrice, Dividend
 from django_tables2 import A
+from django.db.models import Sum
 
 
 class StockTable(tables.Table):
@@ -9,6 +10,17 @@ class StockTable(tables.Table):
         template_name = "django_tables2/bootstrap.html"
         fields = ('nickname','code','yahoo_code','name', 'stock_type', 'current_price','price_updated','perf_5y','perf_3y','perf_1y','perf_6m','perf_3m','perf_1m')
     nickname = tables.LinkColumn("stock_detail", args=[A("pk")])
+
+class StockHoldingTable(tables.Table):
+    nickname = tables.Column(orderable=True)
+    sum_value = tables.Column(orderable=True)
+    perf_1y = tables.Column(orderable=True)
+    perf_3y = tables.Column(orderable=True)
+    perf_5y = tables.Column(orderable=True)
+    class Meta:
+        order_by = '-sum_value'
+        template_name = "django_tables2/bootstrap.html"
+
 
 class PriceTable(tables.Table):
     class Meta:
