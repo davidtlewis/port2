@@ -17,7 +17,8 @@
       {% block sidebar %}
         <ul class="sidebar-nav">
           <li><a href="{% url 'index' %}">Home</a></li>
-          <li><a href="{% url 'custom_report' %}">Custom Report</a></li>
+          <li><a href="{% url 'refresh' %}">Refresh</a></li>
+          <li><a href="{% url 'report' %}">Report</a></li>
           <li><a href="{% url 'accounts' %}">Accounts</a></li>
           <li><a href="{% url 'stockholdingsummary' %}">Stock Holding Summary</a></li>
            <li><a href="{% url 'holdingsfiltered' %}">Holdings</a></li>
@@ -30,10 +31,11 @@
           <li><a href="{% url 'commandform' %}">Commands</a></li>
           <li><a href="/admin">admin</a></li>
           {% if user.is_authenticated %}
-          <li><a href="{% url 'logout' %}">Logout</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li> 
           {% else %}
           <li><a href="{% url 'login' %}">Login</a></li>
           {% endif %}
+          
 
         </ul>
      {% endblock %}

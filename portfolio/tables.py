@@ -62,4 +62,5 @@ class AccountTable(tables.Table):
         model = Account
         template_name = "django_tables2/bootstrap.html"
         fields = ('person','account_type','name','account_value')
-    name = tables.LinkColumn("account_detail", args=[A("pk")])
+    #name = tables.LinkColumn("account_detail", args=[A("pk")])
+    name = tables.LinkColumn("holdingsfiltered")

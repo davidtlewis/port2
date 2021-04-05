@@ -3,7 +3,8 @@ from portfolio import views
 from portfolio.views import StockListView, PriceListView, TransactionListView, TransactionListViewFiltered, HoldingListView, HoldingListViewFiltered, AccountListView, AccountDetailView, HoldingDetailView, HistoricPriceListView, DividendListView, StockHoldingView
 
 urlpatterns = [
-    path("", views.summary, name="index"),
+    path("", views.custom_report, name="index"),
+    path("report", views.summary, name="report"),
     path("stocks/", StockListView.as_view(), name='stocks'),
     path("stockvolumes/", views.StockVolumesView, name='stockvolumes'),
     path("prices/", PriceListView.as_view(), name='prices'),
@@ -22,4 +23,5 @@ urlpatterns = [
     path('commands/', views.command, name='commandform'),
     path('custom_report/', views.custom_report, name='custom_report'),
     path("stockHoldingsummary/", views.StockHoldingView, name='stockholdingsummary'),
+    path("refresh/", views.recalc, name='refresh'),
 ]

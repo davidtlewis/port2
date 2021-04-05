@@ -150,7 +150,7 @@ def transaction_new(request):
         form = CommandForm()
         return render(request, self.template_name, {'form':form})
 """
-@login_required
+@login_required(login_url='/account/login/')
 def command(request):
     if request.method =='POST':
         form = CommandForm(request.POST)
@@ -182,6 +182,13 @@ def command(request):
             'form': form
         }
     return render(request, 'portfolio/commands.html', context)
+
+@login_required(login_url='/account/login/')
+def recalc(request):
+    management.call_command('get_prices')
+    management.call_command('refresh_accounts')
+    return HttpResponseRedirect(reverse('index') )
+
 
 def custom_report(request):
     a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
