@@ -38,8 +38,7 @@ class StockHoldingView2(ExportMixin, SingleTableView):
     queryset = Stock.objects.annotate(sum_value=Sum('holding__current_value'))
     table_class = StockListTable
     template_name = "portfolio/stock_holding_summary2.html"
-
-    #http://127.0.0.1:8000/stockHoldingsummary2/?__export=csv to download csv of this table
+    #http://127.0.0.1:8000/stockHoldingsummary2/?_export=csv to download csv of this table
         
 class PriceListView(SingleTableView):
     model = Price
@@ -102,13 +101,6 @@ class AccountDetailView(DetailView):
     model = Account
     template_name = 'portfolio/account_detail.html'
 
-    """def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        holding_list = Account..objects.all()
-        context['holding_list'] = holding_list
-        return context
-"""
-
 class TransactionDetailView(DetailView):
     model = Transaction
     template_name = 'portfolio/transaction_detail.html'
@@ -120,8 +112,6 @@ class HoldingDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         transaction_list = Transaction.objects.filter(account=self.object.account).filter(stock=self.object.stock)
-        #transaction_list = Transaction.objects.filter(stock=self.stock)
-        #transaction_list = Transaction.objects.all()
         context['transaction_list'] = transaction_list
         return context
 
@@ -146,14 +136,6 @@ def transaction_new(request):
         form = TransactionForm()
     return render(request, 'portfolio/transaction_edit.html', {'form': form})
 
-
-"""class CommandView(TemplateView):
-    template_name = "portfolio/commands.html"
-
-    def get(self,request):
-        form = CommandForm()
-        return render(request, self.template_name, {'form':form})
-"""
 @login_required(login_url='/account/login/')
 def command(request):
     if request.method =='POST':
@@ -193,13 +175,10 @@ def recalc(request):
     management.call_command('refresh_accounts')
     return HttpResponseRedirect(reverse('index') )
 
-
 def custom_report(request):
     a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
     total = a.aggregate(Sum('account_value'))
-    
     dtl_pension = Account.objects.filter(person__name = "david", account_type = "pension") 
-    
     a = Account.objects.filter(person__name = "david").exclude(account_type = "pension") | Account.objects.filter(person__name = "henri").exclude(account_type = "pension")
     accounts_by_type = a.values('account_type').annotate(total_value=Sum('account_value'))
     return render(request, 'portfolio/custom_report.html', {

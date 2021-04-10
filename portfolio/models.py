@@ -65,6 +65,17 @@ class Stock(models.Model):
         ('etfs', 'ETFS'),
     )
     stock_type = models.CharField(max_length=6, choices=STOCK_TYPE, default='equity')
+    STOCK_REGION = (
+        ('world', 'WORLD'),
+        ('us', 'US'),
+        ('uk', 'UK'),
+        ('europe', 'EUROPE'),
+    )
+    stock_region = models.CharField(max_length=6, choices=STOCK_REGION, default='world')
+    
+    
+    
+    
     current_price = models.DecimalField(max_digits=7, decimal_places=2)
     price_updated = models.DateTimeField(null=True)
     perf_5y = models.DecimalField(max_digits=7, decimal_places=2, null=True)

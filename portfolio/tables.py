@@ -1,5 +1,4 @@
 import django_tables2 as tables
-#from django.core.urlresolvers import reverse
 from django.urls import reverse
 from django.utils.html import format_html
 from .models import Stock, Price, Holding, Transaction, Account, HistoricPrice, Dividend
@@ -25,6 +24,7 @@ class StockHoldingTable(tables.Table):
  
 class StockListTable(tables.Table):
     nickname = tables.Column(orderable=True)
+    stock_region = tables.Column(orderable=True)
     sum_value = tables.Column(orderable=True)
     perf_1y = tables.Column(orderable=True)
     perf_3y = tables.Column(orderable=True)
@@ -75,7 +75,6 @@ class AccountTable(tables.Table):
         fields = ('person','account_type','name','account_value')
         order_by = '-person'
     name = tables.LinkColumn("holdingsfiltered")
-    #id = LinkColumn('rqGet', text='Link') # do something with Accessors to make a GET string, maybe ?id=A('pk')
     def render_name(self, record):
         url = reverse('holdingsfiltered')
         return format_html('<a href="{}?account={}">{}</a>', url, record.id, record.name)
