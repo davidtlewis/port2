@@ -4,15 +4,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import DetailView
 from django_tables2 import SingleTableView
 from django_tables2.views import SingleTableMixin
+from django_tables2.export.views import ExportMixin
 from django_filters.views import FilterView
 from .models import Stock, Price, Holding, Transaction, Account, HistoricPrice, Dividend
-from .tables import StockTable, HoldingTable, TransactionTable, PriceTable, AccountTable, HistoricPriceTable, DividendTable, StockHoldingTable
+from .tables import StockTable, HoldingTable, TransactionTable, PriceTable, AccountTable, HistoricPriceTable, DividendTable, StockHoldingTable, StockListTable
 from django.db.models import Sum
 from .forms import TransactionForm, CommandForm
 from django.shortcuts import redirect
 from django.core import management
 from django.contrib.auth.decorators import login_required
-from .filters import HoldingByAccountFilter, TransactionByAccountFilter, HistoricPriceByStockFilter, DividendByStockFilter
+from .filters import HoldingByAccountFilter, HoldingByAccountFilter2, TransactionFilter, HistoricPriceByStockFilter, DividendByStockFilter
 from datetime import datetime, date
 import time
 from django_tables2 import RequestConfig
@@ -29,21 +30,24 @@ def StockVolumesView(request):
     stock_volumes = Holding.objects.values('stock__name').annotate(share_volume=Sum('volume'))
     return render(request, 'portfolio/stock_volumes.html', {'stock_volumes': stock_volumes,}, )
 
-"""def StockHoldingSummary(request):
-    stock_holding_summary = Stock.objects.annotate(sum_value=Sum('holding__current_value'))
-    return render(request, 'portfolio/stock_holding_summary.html', {'stock_holding_summary': stock_holding_summary,}, )"""
-
 def StockHoldingView(request):
     table = StockHoldingTable(Stock.objects.annotate(sum_value=Sum('holding__current_value')))
     return render(request, "portfolio/stock_holding_summary2.html",{"table":table})
-    
+
+class StockHoldingView2(ExportMixin, SingleTableView):
+    queryset = Stock.objects.annotate(sum_value=Sum('holding__current_value'))
+    table_class = StockListTable
+    template_name = "portfolio/stock_holding_summary2.html"
+
+    #http://127.0.0.1:8000/stockHoldingsummary2/?__export=csv to download csv of this table
+        
 class PriceListView(SingleTableView):
     model = Price
     table_class = PriceTable
     template_name = 'portfolio/price.html'
     paginate_by = 10
 
-class HoldingListViewFiltered(SingleTableMixin, FilterView):
+class HoldingListViewFiltered(SingleTableMixin, FilterView,ExportMixin):
     model = Holding
     table_class = HoldingTable
     template_name = 'portfolio/holding.html'
@@ -76,7 +80,7 @@ class TransactionListViewFiltered(SingleTableMixin, FilterView):
     model = Transaction
     table_class = TransactionTable
     template_name = 'portfolio/transaction.html'
-    filterset_class = TransactionByAccountFilter
+    filterset_class = TransactionFilter
 
 class AccountListView(SingleTableView):
     model = Account

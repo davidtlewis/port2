@@ -1,8 +1,10 @@
 import django_tables2 as tables
+#from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.utils.html import format_html
 from .models import Stock, Price, Holding, Transaction, Account, HistoricPrice, Dividend
 from django_tables2 import A
 from django.db.models import Sum
-
 
 class StockTable(tables.Table):
     class Meta:
@@ -20,7 +22,16 @@ class StockHoldingTable(tables.Table):
     class Meta:
         order_by = '-sum_value'
         template_name = "django_tables2/bootstrap.html"
-
+ 
+class StockListTable(tables.Table):
+    nickname = tables.Column(orderable=True)
+    sum_value = tables.Column(orderable=True)
+    perf_1y = tables.Column(orderable=True)
+    perf_3y = tables.Column(orderable=True)
+    perf_5y = tables.Column(orderable=True)
+    class Meta:
+        order_by = '-sum_value'
+        template_name = "django_tables2/bootstrap.html"
 
 class PriceTable(tables.Table):
     class Meta:
@@ -62,5 +73,9 @@ class AccountTable(tables.Table):
         model = Account
         template_name = "django_tables2/bootstrap.html"
         fields = ('person','account_type','name','account_value')
-    #name = tables.LinkColumn("account_detail", args=[A("pk")])
+        order_by = '-person'
     name = tables.LinkColumn("holdingsfiltered")
+    #id = LinkColumn('rqGet', text='Link') # do something with Accessors to make a GET string, maybe ?id=A('pk')
+    def render_name(self, record):
+        url = reverse('holdingsfiltered')
+        return format_html('<a href="{}?account={}">{}</a>', url, record.id, record.name)
