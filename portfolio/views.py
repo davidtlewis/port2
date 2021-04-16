@@ -46,7 +46,7 @@ class PriceListView(SingleTableView):
     template_name = 'portfolio/price.html'
     paginate_by = 10
 
-class HoldingListViewFiltered(SingleTableMixin, FilterView,ExportMixin):
+class HoldingListViewFiltered(ExportMixin,SingleTableMixin, FilterView):
     model = Holding
     table_class = HoldingTable
     template_name = 'portfolio/holding.html'

@@ -45,7 +45,7 @@ def clear_pricehistory(modeladmin, request, queryset):
 
 
 class StockAdmin(admin.ModelAdmin):
-    list_display = ('name', 'nickname', 'code', 'yahoo_code', 'stock_type','stock_region', 'current_price', 'price_updated')
+    list_display = ('name', 'active','nickname', 'code', 'yahoo_code', 'stock_type','stock_region', 'current_price', 'price_updated')
     list_filter = ('stock_type', )
     actions = [fill_pricehistory, clear_pricehistory]
 
