@@ -181,6 +181,7 @@ def custom_report(request):
     dtl_pension = Account.objects.filter(account_type = "pension") 
     a = Account.objects.filter(person__name = "david").exclude(account_type = "pension") | Account.objects.filter(person__name = "henri").exclude(account_type = "pension")
     accounts_by_type = a.values('account_type').annotate(total_value=Sum('account_value'))
+    stock_currencies = Stock.objects.filter(stock_type = "curr")
     return render(request, 'portfolio/custom_report.html', {
-    'total': total, 'dtl_pension':dtl_pension, 'accounts_by_type': accounts_by_type, 
+    'total': total, 'dtl_pension':dtl_pension, 'accounts_by_type': accounts_by_type, 'stock_currencies': stock_currencies,
     }, )

@@ -48,6 +48,7 @@ class Person(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a particular  instance."""
         return reverse('account_detail', args=[str(self.id)])
+
 class Stock(models.Model):
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=20)
@@ -63,6 +64,7 @@ class Stock(models.Model):
         ('fund', 'FUND'),
         ('equity', 'EQUITY'),
         ('etfs', 'ETFS'),
+        ('curr','CURR'),
     )
     stock_type = models.CharField(max_length=6, choices=STOCK_TYPE, default='equity')
     STOCK_REGION = (
@@ -73,7 +75,7 @@ class Stock(models.Model):
     )
     stock_region = models.CharField(max_length=6, choices=STOCK_REGION, default='world')
     active = models.BooleanField(default=True)
-    current_price = models.DecimalField(max_digits=7, decimal_places=2)
+    current_price = models.DecimalField(max_digits=7, decimal_places=4)
     price_updated = models.DateTimeField(null=True)
     perf_5y = models.DecimalField(max_digits=7, decimal_places=2, null=True)
     perf_3y = models.DecimalField(max_digits=7, decimal_places=2, null=True)
@@ -99,14 +101,17 @@ class Stock(models.Model):
             baseurl2 = {
                 "etfs":"etfs/tearsheet/performance?s=",
                 "fund":"funds/tearsheet/performance?s=",
-                "equity":"equities/tearsheet/summary?s="
+                "equity":"equities/tearsheet/summary?s=",
+                "curr":"currencies/tearsheet/summary?s="
             }
             url = baseurl1 + baseurl2[self.stock_type] + self.code
+            
             page = requests.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
             scrapped_current_price = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
             current_price = locale.atof(scrapped_current_price)
+            #current_price = float(scrapped_current_price)
             if self.currency == 'gbx':
                 current_price = current_price / 100
             self.current_price = current_price
