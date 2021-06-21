@@ -9,7 +9,7 @@
                 <th style="width: 35%">Account type</th>
                 <th style="width: 30%">Total Value</th>
             </tr>
-            {% for pension in dtl_pension %}
+            {% for pension in pensions %}
             <tr>
                 <td>{{pension.person}}</a></td>
                 <td>{{pension.account_type}}</a></td>
@@ -43,7 +43,7 @@
             <tr>
                 <td>{{ stock_currency.nickname }}</td>
                 <td>{{stock_currency.current_price}}</td>
-                <td>{{stock_currency.price_updated }}</td>
+                <td>{{stock_currency.price_updated|date:"d M"}} {{stock_currency.price_updated|time}}</td>
             </tr>
             {% endfor %}
         </table>
