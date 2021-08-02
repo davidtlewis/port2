@@ -6,6 +6,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for h in Holding.objects.all():
-            self.stdout.write(self.style.SUCCESS('about to do holdings: ' + h.stock.name + " / " + h.account.name))
+            self.stdout.write(self.style.SUCCESS('Refreshing value for holdings: ' + h.stock.name + " / " + h.account.name))
             h.refresh_value()
             

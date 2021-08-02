@@ -116,6 +116,7 @@ class Stock(models.Model):
                 current_price = current_price / 100
             self.current_price = current_price
             self.price_updated = timezone.now()
+            #self.price_updated = datetime.now()
             self.save()
         #now to refresh  holdings which contain this stock
         related_holdings = Holding.objects.filter(stock=self)
@@ -130,7 +131,7 @@ class Stock(models.Model):
             "fund":"funds/tearsheet/performance?s=",
             "equity":"equities/tearsheet/summary?s="
         }
-        if self.stock_type != 'equity':
+        if self.stock_type != 'equity' and self.stock_type != 'curr':
             url = baseurl1 + baseurl2[self.stock_type] + self.code
             page = requests.get(url)
             contents = page.content

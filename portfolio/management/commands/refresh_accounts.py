@@ -6,5 +6,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         for ac in Account.objects.all():
-            self.stdout.write(self.style.SUCCESS('about to do account' + ac.name))
+            self.stdout.write(self.style.SUCCESS('refreshing account value: ' + ac.name))
             ac.refresh_value()

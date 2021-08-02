@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = 'testing adding a Price'
     def handle(self, *args, **options):
                 
-        for s in Stock.objects.all():
-            self.stdout.write(self.style.SUCCESS('about to do get price for ' + s.nickname))
+        for s in Stock.objects.filter(active=True):
+            self.stdout.write(self.style.SUCCESS('Getting price: ' + s.nickname))
             s.refresh_value()
         

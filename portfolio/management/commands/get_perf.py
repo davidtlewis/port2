@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'checking historic performance'
     def handle(self, *args, **options):
                 
-        for s in Stock.objects.all():
+        for s in Stock.objects.filter(active=True):
             self.stdout.write(self.style.SUCCESS('about to do get performance for  ' + s.nickname))
             s.refresh_perf()
         
