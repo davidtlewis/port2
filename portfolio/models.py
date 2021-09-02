@@ -16,6 +16,7 @@ class Account(models.Model):
         ('pension', 'PENSION'),
         ('standard', 'STANDARD'),
         ('VCT', 'VCT'),
+        ('cash','CASH')
     )
     account_type = models.CharField(max_length=8, choices=ACCOUNT_TYPE, default='buy')
     account_value = models.DecimalField(max_digits=9, decimal_places=2, default=0)
