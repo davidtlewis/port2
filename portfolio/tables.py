@@ -23,7 +23,8 @@ class StockHoldingTable(tables.Table):
         template_name = "django_tables2/bootstrap.html"
  
 class StockListTable(tables.Table):
-    nickname = tables.Column(orderable=True)
+    #nickname = tables.Column(orderable=True)
+    name = tables.LinkColumn("holdingsfiltered")
     stock_region = tables.Column(orderable=True)
     sum_value = tables.Column(orderable=True)
     perf_1y = tables.Column(orderable=True)
@@ -32,6 +33,9 @@ class StockListTable(tables.Table):
     class Meta:
         order_by = '-sum_value'
         template_name = "django_tables2/bootstrap.html"
+    def render_name(self, record):
+        url = reverse('holdingsfiltered')
+        return format_html('<a href="{}?stock={}">{}</a>', url, record.id, record.nickname)
 
 class PriceTable(tables.Table):
     class Meta:

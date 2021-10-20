@@ -24,8 +24,8 @@ class Account(models.Model):
     account_value = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     person = models.ForeignKey('Person', on_delete=models.CASCADE, null=True)
 
-    class Meta:
-        ordering = ['name']
+    #class Meta:
+        #ordering = ['name']
 
     def __str__(self):
         return self.name

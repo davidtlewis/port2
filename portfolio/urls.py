@@ -1,10 +1,10 @@
 from django.urls import path
 from portfolio import views
-from portfolio.views import StockListView, PriceListView, TransactionListView, TransactionListViewFiltered, HoldingListView, HoldingListViewFiltered, AccountListView, AccountDetailView, HoldingDetailView, HistoricPriceListView, DividendListView, StockHoldingView, StockHoldingView2
+from portfolio.views import StockListView, PriceListView, TransactionListView, TransactionListViewFiltered, HoldingListView, HoldingListViewFiltered, AccountListView, AccountDetailView, HoldingDetailView, HistoricPriceListView, DividendListView, StockHoldingView
 
 urlpatterns = [
-    path("", views.custom_report, name="index"),
-    path("report", views.summary, name="report"),
+    path("", views.summary, name="index"),
+    path("report", views.detailed_summary, name="detail"),
     path("stocks/", StockListView.as_view(), name='stocks'),
     path("stockvolumes/", views.StockVolumesView, name='stockvolumes'),
     path("prices/", PriceListView.as_view(), name='prices'),
@@ -21,8 +21,6 @@ urlpatterns = [
     path('stock/<int:pk>', views.StockDetailView.as_view(), name='stock_detail'),
     path('transaction/new/', views.transaction_new, name='transaction_new'),
     path('commands/', views.command, name='commandform'),
-    path('custom_report/', views.custom_report, name='custom_report'),
-    path("stockHoldingsummary/", views.StockHoldingView, name='stockholdingsummary'),
-    path("stockHoldingsummary2/", views.StockHoldingView2.as_view(), name='stockholdingsummary2'),
+    path("stockholdingsummary/", views.StockHoldingView.as_view(), name='stockholdingsummary'),
     path("refresh/", views.recalc, name='refresh'),
 ]

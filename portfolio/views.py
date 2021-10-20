@@ -33,14 +33,11 @@ def StockVolumesView(request):
     stock_volumes = Holding.objects.values('stock__name').annotate(share_volume=Sum('volume'))
     return render(request, 'portfolio/stock_volumes.html', {'stock_volumes': stock_volumes,}, )
 
-def StockHoldingView(request):
-    table = StockHoldingTable(Stock.objects.annotate(sum_value=Sum('holding__current_value')))
-    return render(request, "portfolio/stock_holding_summary2.html",{"table":table})
-
-class StockHoldingView2(ExportMixin, SingleTableView):
-    queryset = Stock.objects.annotate(sum_value=Sum('holding__current_value'))
+class StockHoldingView(ExportMixin, SingleTableView):
+    queryset  = Stock.objects.annotate(sum_value=Sum('holding__current_value')).filter(sum_value__gt=0)
     table_class = StockListTable
     template_name = "portfolio/stock_holding_summary2.html"
+    table_pagination=False
     #http://127.0.0.1:8000/stockHoldingsummary2/?_export=csv to download csv of this table
         
 class PriceListView(SingleTableView):
@@ -54,6 +51,7 @@ class HoldingListViewFiltered(ExportMixin,SingleTableMixin, FilterView):
     table_class = HoldingTable
     template_name = 'portfolio/holding.html'
     filterset_class = HoldingByAccountFilter
+    queryset  = Holding.objects.all().filter(current_value__gt=0)
 
 class HistoricPriceListView(SingleTableMixin, FilterView):
     model = HistoricPrice
@@ -89,7 +87,7 @@ class AccountListView(SingleTableView):
     table_class = AccountTable
     template_name = 'portfolio/account.html'
 
-def summary(request):
+def detailed_summary(request):
     totals = Account.objects.aggregate(Sum('account_value'))
     accounts = Account.objects.all()
     #accounts_by_type = Account.objects.values('account_type').annotate(total_value=Sum('account_value'))
@@ -178,7 +176,7 @@ def recalc(request):
     management.call_command('refresh_accounts')
     return HttpResponseRedirect(reverse('index') )
 
-def custom_report(request):
+def summary(request):
     a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
     total = a.aggregate(Sum('account_value'))
     pensions = Account.objects.filter(account_type = "pension") 
