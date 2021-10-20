@@ -13,7 +13,7 @@ from .forms import TransactionForm, CommandForm
 from django.shortcuts import redirect
 from django.core import management
 from django.contrib.auth.decorators import login_required
-from .filters import HoldingByAccountFilter, HoldingByAccountFilter2, TransactionFilter, HistoricPriceByStockFilter, DividendByStockFilter
+from .filters import HoldingByAccountFilter, HoldingByAccountFilter2, TransactionFilter, HistoricPriceByStockFilter, DividendByStockFilter, StockListFilter
 from datetime import datetime, date
 import time
 from django_tables2 import RequestConfig
@@ -21,10 +21,13 @@ from django_tables2 import RequestConfig
 def home(request):
     return HttpResponse("Hello, Django!")
 
-class StockListView(SingleTableView):
+class StockListView(SingleTableView, FilterView):
     model = Stock
     table_class = StockTable
     template_name = 'portfolio/stock.html'
+    #filterset_class = StockListFilter
+    queryset = Stock.objects.all().filter(active=True)
+    table_pagination=False
 
 def StockVolumesView(request):
     stock_volumes = Holding.objects.values('stock__name').annotate(share_volume=Sum('volume'))

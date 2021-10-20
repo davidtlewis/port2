@@ -9,8 +9,12 @@ from django.utils import timezone
 class Command(BaseCommand):
     help = 'testing adding a Price'
     def handle(self, *args, **options):
-                
-        for s in Stock.objects.filter(active=True):
-            self.stdout.write(self.style.SUCCESS('Getting price: ' + s.nickname))
+        stock_list = Stock.objects.filter(active=True)
+        total_number = len(stock_list)        
+        counter = 0
+        for s in stock_list:
+            counter = counter + 1
+            message = '[' +  str(counter) + ' of ' + str(total_number) +']: Scraping  price:  ' + s.nickname
+            self.stdout.write(self.style.SUCCESS(message))
             s.refresh_value()
-        
+    

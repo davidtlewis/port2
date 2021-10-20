@@ -4,6 +4,8 @@ from datetime import datetime, date, timedelta
 from django.db import models
 from django.db.models import Sum
 import requests
+from requests_html import HTMLSession
+
 from bs4 import BeautifulSoup
 from django.utils import timezone
 from django.urls import reverse
@@ -23,7 +25,7 @@ class Account(models.Model):
     person = models.ForeignKey('Person', on_delete=models.CASCADE, null=True)
 
     class Meta:
-        ordering = ['account_type']
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -106,13 +108,22 @@ class Stock(models.Model):
                 "curr":"currencies/tearsheet/summary?s="
             }
             url = baseurl1 + baseurl2[self.stock_type] + self.code
+            if self.stock_type == 'etfs':
+                url = "https://finance.yahoo.com/quote/" + self.yahoo_code
             
-            page = requests.get(url)
+            print("Calling URL:",url)
+            session = HTMLSession() # trying new library to get more reliable scrapes
+            page = session.get(url)
+            #page = requests.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
-            scrapped_current_price = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
+            if self.stock_type == 'etfs':
+                scrapped_current_price = soup.find("span", attrs={"data-reactid": "31"}).string
+            else:
+                scrapped_current_price = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
             current_price = locale.atof(scrapped_current_price)
             #current_price = float(scrapped_current_price)
+            print(f"Returned string value {scrapped_current_price}. Converted to number = {current_price}.")
             if self.currency == 'gbx':
                 current_price = current_price / 100
             self.current_price = current_price
@@ -134,7 +145,9 @@ class Stock(models.Model):
         }
         if self.stock_type != 'equity' and self.stock_type != 'curr':
             url = baseurl1 + baseurl2[self.stock_type] + self.code
-            page = requests.get(url)
+            session = HTMLSession() # trying new library to get more reliable scrapes
+            page = session.get(url)
+            #page = requests.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
             scrapped_5y_perf = soup.find("div", class_='mod-ui-table--freeze-pane__scroll-container').find_all("tr")[1].find_all("td")[1].string
@@ -152,7 +165,12 @@ class Stock(models.Model):
             self.save()
                
     def get_historic_prices(self):
+        #broken - might need to implement all this cookie stuff to fix access to yahoo - https://maikros.github.io/yahoo-finance-python/
         if not self.yahoo_code:
+            return
+        if self.yahoo_code == "none":
+            return
+        if self.active == False:
             return
         batch = 135
         locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
@@ -161,7 +179,6 @@ class Stock(models.Model):
                 return locale.atof(textin)
             except ValueError:
                 return 0
-
         today = date.today()
         #find last date in historicPrices
         last_date_record = HistoricPrice.objects.filter(stock=self).first()
@@ -170,20 +187,24 @@ class Stock(models.Model):
             last_date = date(2017, 1, 1)
         else:
             last_date = last_date_record.date
-        print(">>>filling from ", last_date, "to ", today,)
+        print("Stock:", self.name, " Getting history from ", last_date, "to ", today,)
         from_date = last_date + timedelta(days=1)
         while from_date < today:
             to_date = min((from_date + timedelta(days=batch)), today)
             endunix = int(time.mktime(to_date.timetuple()))
             startunix = int(time.mktime(from_date.timetuple()))
             url = "https://uk.finance.yahoo.com/quote/" + self.yahoo_code + "/history?period1=" + str(startunix) + "&period2=" + str(endunix) + "&interval=1d&filter=history&frequency=1d"
-            page = requests.get(url)
+            #page = requests.get(url)
+            session = HTMLSession()
+            page = session.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
             rows = soup.table.tbody.find_all("tr")
-            print("from:", from_date, " to :", to_date, ". Records returned: ", len(rows), url)
+            print("from:", from_date, " to :", to_date, ". Records returned: ", len(rows), ". ", url)
+            print ("rows", len(rows))
             for table_row in rows:
                 columns = table_row.find_all("td")
+                print ("Columns: ", len(columns))
                 if len(columns) == 7:
                     #save price record
                     hp = HistoricPrice(stock=self, date=datetime.strptime(columns[0].text, '%d %b %Y'), open=converttonumber(columns[1].text), high=converttonumber(columns[2].text), low=converttonumber(columns[3].text), close=converttonumber(columns[4].text), adjclose=converttonumber(columns[5].text))
