@@ -108,22 +108,28 @@ class Stock(models.Model):
                 "curr":"currencies/tearsheet/summary?s="
             }
             url = baseurl1 + baseurl2[self.stock_type] + self.code
-            if self.stock_type == 'etfs':
+            if self.stock_type == 'etfs' or self.stock_type =='curr':
                 url = "https://finance.yahoo.com/quote/" + self.yahoo_code
-            
-            print("Calling URL:",url)
             session = HTMLSession() # trying new library to get more reliable scrapes
+            print(f"Calling URL: {url}")
             page = session.get(url)
             #page = requests.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
-            if self.stock_type == 'etfs':
-                scrapped_current_price = soup.find("span", attrs={"data-reactid": "31"}).string
+            if self.stock_type == 'etfs' or self.stock_type =='curr':
+                scrapped_element =  soup.find("span", attrs={"data-reactid": "29"})
+                if scrapped_element is not None:
+                        scrapped_current_price = scrapped_element.string
+                        current_price = locale.atof(scrapped_current_price)
+                else:
+                    print("!!!!WARNING: Scrape fail")
+                    scrapped_current_price = ""
+                    current_price = self.current_price
             else:
                 scrapped_current_price = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
-            current_price = locale.atof(scrapped_current_price)
+                current_price = locale.atof(scrapped_current_price)
             #current_price = float(scrapped_current_price)
-            print(f"Returned string value {scrapped_current_price}. Converted to number = {current_price}.")
+            print(f"Calling URL: {url}. Returned string value {scrapped_current_price}.")
             if self.currency == 'gbx':
                 current_price = current_price / 100
             self.current_price = current_price

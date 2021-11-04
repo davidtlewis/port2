@@ -162,7 +162,7 @@ def command(request):
                 for stock in stocks:
                     stock.get_historic_prices()
 
-        return HttpResponseRedirect(reverse('custom_report') )
+        return HttpResponseRedirect(reverse('index') )
     else:
         form = CommandForm()
         context = {

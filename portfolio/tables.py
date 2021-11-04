@@ -9,7 +9,7 @@ class StockTable(tables.Table):
     class Meta:
         model = Stock
         template_name = "django_tables2/bootstrap.html"
-        fields = ('nickname','code','active','yahoo_code','name', 'stock_type', 'current_price','price_updated','perf_5y','perf_3y','perf_1y','perf_6m','perf_3m','perf_1m')
+        fields = ('nickname','name', 'stock_type', 'current_price','price_updated','perf_5y','perf_3y','perf_1y','perf_6m','perf_3m','perf_1m')
     nickname = tables.LinkColumn("stock_detail", args=[A("pk")])
 
 class StockHoldingTable(tables.Table):
@@ -62,8 +62,7 @@ class HoldingTable(tables.Table):
         template_name = "django_tables2/bootstrap.html"
         fields = ('account','stock', 'volume', 'book_cost')
     account = tables.LinkColumn("holding_detail", args=[A("pk")])
-    current_value = tables.Column(footer=lambda table: sum(x.current_value for x in table.data)
-)
+    current_value = tables.Column(footer=lambda table: sum(x.current_value for x in table.data))
 
 class TransactionTable(tables.Table):
     class Meta:
