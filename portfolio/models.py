@@ -123,7 +123,7 @@ class Stock(models.Model):
                         scrapped_current_price = scrapped_element.string
                         current_price = locale.atof(scrapped_current_price)
                 else:
-                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING: Scrape fail")
+                    print("!!!WARNING: Scrape fail")
                     scrapped_current_price = ""
                     current_price = self.current_price
             else:
@@ -201,26 +201,27 @@ class Stock(models.Model):
             endunix = int(time.mktime(to_date.timetuple()))
             startunix = int(time.mktime(from_date.timetuple()))
             url = "https://uk.finance.yahoo.com/quote/" + self.yahoo_code + "/history?period1=" + str(startunix) + "&period2=" + str(endunix) + "&interval=1d&filter=history&frequency=1d"
+            
             #page = requests.get(url)
             session = HTMLSession()
             page = session.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
             rows = soup.table.tbody.find_all("tr")
-            print("from:", from_date, " to :", to_date, ". Records returned: ", len(rows), ". ", url)
+            print("Stock:", self.name,"from:", from_date, " to :", to_date, ". Records returned: ", len(rows), ". ", url)
             print ("rows", len(rows))
             for table_row in rows:
                 columns = table_row.find_all("td")
                 print ("Columns: ", len(columns))
                 if len(columns) == 7:
                     #save price record
-                    hp = HistoricPrice(stock=self, date=datetime.strptime(columns[0].text, '%d %b %Y'), open=converttonumber(columns[1].text), high=converttonumber(columns[2].text), low=converttonumber(columns[3].text), close=converttonumber(columns[4].text), adjclose=converttonumber(columns[5].text))
+                    hp = HistoricPrice(stock=self, date=datetime.strptime(columns[0].text.upper().replace("SEPT", "SEP"), '%d %b %Y'), open=converttonumber(columns[1].text), high=converttonumber(columns[2].text), low=converttonumber(columns[3].text), close=converttonumber(columns[4].text), adjclose=converttonumber(columns[5].text))
                     hp.save()
                     #maybe use uniqueness of data to stop duplicate being added.
                 if len(columns) == 2:
                     #save div record
                     amount_text = columns[1].strong.text
-                    div = Dividend(stock=self, date=datetime.strptime(columns[0].text, '%d %b %Y'), amount=converttonumber(amount_text))
+                    div = Dividend(stock=self, date=datetime.strptime(columns[0].text.upper().replace("SEPT", "SEP"), '%d %b %Y'), amount=converttonumber(amount_text))
                     div.save()
             #get ready for next loop
             from_date = to_date + + timedelta(days=1)
