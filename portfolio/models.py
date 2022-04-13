@@ -3,7 +3,7 @@ import time
 from datetime import datetime, date, timedelta
 from django.db import models
 from django.db.models import Sum
-import requests
+#import requests
 from requests_html import HTMLSession
 
 from bs4 import BeautifulSoup
@@ -111,14 +111,14 @@ class Stock(models.Model):
             if self.stock_type == 'etfs' or self.stock_type =='curr':
                 url = "https://finance.yahoo.com/quote/" + self.yahoo_code
             session = HTMLSession() # trying new library to get more reliable scrapes
-            #print(f"Calling URL: {url}")
+            print(f"Calling URL: {url}")
             page = session.get(url)
             #page = requests.get(url)
             contents = page.content
             soup = BeautifulSoup(contents, 'html.parser')
             if self.stock_type == 'etfs' or self.stock_type =='curr':
                 #scrapped_element =  soup.find("fin-streamer", attrs={"data-reactid": "29"})
-                scrapped_element =  soup.find("fin-streamer", attrs={"data-symbol":  self.yahoo_code})
+                scrapped_element =  soup.find("fin-streamer", attrs={"data-symbol": self.yahoo_code, "data-field": 'regularMarketPrice'})
                 if scrapped_element is not None:
                         scrapped_current_price = scrapped_element.string
                         current_price = locale.atof(scrapped_current_price)
