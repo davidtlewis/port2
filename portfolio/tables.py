@@ -63,6 +63,7 @@ class HoldingTable(tables.Table):
         fields = ('account','stock', 'volume', 'book_cost')
     account = tables.LinkColumn("holding_detail", args=[A("pk")])
     current_value = tables.Column(footer=lambda table: sum(x.current_value for x in table.data))
+    volume = tables.Column(footer=lambda table: sum(x.volume for x in table.data))
 
 class TransactionTable(tables.Table):
     class Meta:
