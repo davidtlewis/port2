@@ -1,8 +1,20 @@
 {% extends 'portfolio/base.html' %}
 {% load tz %}
 {% block content %}
-        <h1>H & D Summary Report</h1>
-        <h2></h2>total: {{ total.account_value__sum |floatformat:0 }}</h2>
+        <h1>Summary Report</h1>
+        <h2>total: {{ total.account_value__sum |floatformat:0 }}</h2>
+        {{accounts_by_type.0.total_value}}<br>
+        {{accounts_by_type.1.total_value}}<br>
+        {{pensions.0.account_value}}<br>
+        {{pensions.1.account_value}}<br>
+        {{stock_currencies.0.current_price}}<br>
+
+        <ul>
+            <li><a href="https://www.avivamymoney.co.uk/" target="_blank"> Henri Pension</a>
+            <li><a href="https://finance.yahoo.com/quote/GBPUSD%3DX?p=GBPUSD%3DX" target="_blank">GBP/USD</a>
+            <li><a href="https://ito-world-ltd.autoenrolment.co.uk/employee/" target="_blank">ito pension</a>
+            <li><a href="https://www.iweb-sharedealing.co.uk/" target="_blank">iWeb</a>
+        </ul>
         <h2> Pensions</h2>
         <table style="width: 500px;" class="table table-striped table-condensed">
             <tr>
@@ -49,17 +61,8 @@
             {% endfor %}
         </table>
 
-        <ul>
-            <li><a href="https://www.avivamymoney.co.uk/" target="_blank"> Henri Pension</a>
-            <li><a href="https://finance.yahoo.com/quote/GBPUSD%3DX?p=GBPUSD%3DX" target="_blank">GBP/USD</a>
-            <li><a href="https://ito-world-ltd.autoenrolment.co.uk/employee/" target="_blank">ito pension</a>
-            <li><a href="https://www.iweb-sharedealing.co.uk/" target="_blank">iWeb</a>
-        </ul>
-        {{accounts_by_type.0.total_value}}<br>
-        {{accounts_by_type.1.total_value}}<br>
-        {{pensions.0.account_value}}<br>
-        {{pensions.1.account_value}}<br>
-        {{stock_currencies.0.current_price}}<br>
+        
+        
         
 
 {% endblock %}
