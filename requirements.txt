@@ -1,0 +1,11 @@
+django-tables2
+django-extensions
+django-bootstrap4
+django-crispy-forms
+django-debug-toolbar django-filter
+mysqlclient
+requests
+tablib
+requests-html
+# sudo apt-get install mysql-client
+# sudo apt-get install default-libmysqlclient-dev
