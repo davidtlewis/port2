@@ -1,7 +1,7 @@
 {% extends 'portfolio/base.html' %}
 {% load tz %}
 {% block content %}
-        <h1>Summary Report</h1>
+        <h1>Summary Report at {{stock_currencies.0.price_updated|time}}</h1>
         <h2>total: {{ total.account_value__sum |floatformat:0 }}</h2>
         {{accounts_by_type.0.total_value}}<br>
         {{accounts_by_type.1.total_value}}<br>
