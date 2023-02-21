@@ -111,7 +111,7 @@ class Stock(models.Model):
             if self.stock_type == 'etfs' or self.stock_type =='curr':
                 url = "https://finance.yahoo.com/quote/" + self.yahoo_code
             session = HTMLSession() # trying new library to get more reliable scrapes
-            print(f"Calling URL: {url}")
+            #print(f"Calling URL: {url}")
             page = session.get(url)
             #page = requests.get(url)
             contents = page.content
