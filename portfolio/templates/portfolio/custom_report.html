@@ -3,12 +3,16 @@
 {% block content %}
         <h1>Summary Report at {{stock_currencies.0.price_updated|time}}</h1>
         <h2>total: {{ total.account_value__sum |floatformat:0 }}</h2>
-        {{accounts_by_type.0.total_value}}<br>
-        {{accounts_by_type.1.total_value}}<br>
-        {{pensions.0.account_value}}<br>
-        {{pensions.1.account_value}}<br>
-        {{stock_currencies.0.current_price}}<br>
+        <button id="copybtn">Copy</button><br>
+        <button id="demo" onclick="copyToClipboard(document.getElementById('copytextarea').innerHTML)">This is what I want to copy</button>
+        <div id="copytextarea">
 
+            {{accounts_by_type.0.total_value}}<br>
+            {{accounts_by_type.1.total_value}}<br>
+            {{pensions.0.account_value}}<br>
+            {{pensions.1.account_value}}<br>
+            {{stock_currencies.0.current_price}}<br>
+        </div>
         <ul>
             <li><a href="https://www.avivamymoney.co.uk/" target="_blank"> Henri Pension</a>
             <li><a href="https://finance.yahoo.com/quote/GBPUSD%3DX?p=GBPUSD%3DX" target="_blank">GBP/USD</a>
@@ -61,8 +65,29 @@
             {% endfor %}
         </table>
 
+{% endblock %}
+
+{% block script %}  
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('#copybtn').addEventListener('click', function(event) {
+            var copyTextarea = document.querySelector('#copytextarea');
+            copyTextarea.focus();
+            copyTextarea.select();
         
-        
-        
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Copying text command was ' + msg);
+            } catch (err) {
+                console.log('Oops, unable to copy');
+            }
+        })});
+
+    function copyToClipboard(text) {
+        window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+      }
+</script>
 
 {% endblock %}
+
