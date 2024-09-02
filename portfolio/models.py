@@ -98,6 +98,8 @@ class Stock(models.Model):
 
     def refresh_value(self):
         locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+        # locale.setlocale(locale.LC_ALL, 'en_GB.utf8')
+        # locale.setlocale(locale.LC_ALL, '')
         # self.current_price = 0
         if self.code != "none" and self.active==True:
             baseurl1 = "https://markets.ft.com/data/"

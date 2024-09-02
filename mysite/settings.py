@@ -25,7 +25,7 @@ SECRET_KEY = '4n63e7wpm@knc6v1h^45t812+=e@z%l_s^p8)^s(#45)6*4kz2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.199','microserver','127.0.0.1','portfolio.dtlewis.com']
+ALLOWED_HOSTS = ['192.168.1.231','oddjob','127.0.0.1','portfolio.dtlewis.com']
 
 USE_THOUSAND_SEPARATOR = True
 
@@ -97,7 +97,7 @@ DATABASES = {
         'NAME': 'portfolio',
         'USER': 'portfolio',
         'PASSWORD': 'mervan',
-        'HOST': '192.168.1.199',
+        'HOST': 'localhost',
         'PORT': '3306',
         
     }
@@ -156,3 +156,5 @@ INTERNAL_IPS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+CSRF_TRUSTED_ORIGINS = ['https://portfolio.dtlewis.com']

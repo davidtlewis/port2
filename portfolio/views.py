@@ -94,7 +94,7 @@ def detailed_summary(request):
     a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
     accounts_by_type = a.values('account_type').annotate(total_value=Sum('account_value'))
     accounts_by_person = Account.objects.values('person__name').annotate(total_value=Sum('account_value')).order_by('person__name')
-    return render(request, 'portfolio/summary.html', {
+    return render(request, 'portfolio/detailedsummary.html', {
     'totals': totals, 'accounts':accounts, 'accounts_by_type': accounts_by_type, 'accounts_by_person': accounts_by_person,
     }, )
 
@@ -176,7 +176,7 @@ def recalc(request):
     management.call_command('refresh_accounts')
     return HttpResponseRedirect(reverse('index') )
 
-def summary(request):
+def summary_old(request):
     a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
     total = a.aggregate(Sum('account_value'))
     pensions = Account.objects.filter(account_type = "pension") 
@@ -185,4 +185,27 @@ def summary(request):
     stock_currencies = Stock.objects.filter(stock_type = "curr")
     return render(request, 'portfolio/custom_report.html', {
     'total': total, 'pensions':pensions, 'accounts_by_type': accounts_by_type, 'stock_currencies': stock_currencies,
+    }, )
+
+def summary(request):
+    a = Account.objects.filter(person__name = "david") | Account.objects.filter(person__name = "henri")
+    stock_currencies = Stock.objects.filter(stock_type = "curr")
+    USDGBP = stock_currencies[0].current_price
+    updateTime = stock_currencies[0].price_updated
+    total = a.aggregate(Sum('account_value'))
+    totalvalue = total['account_value__sum']
+    totalUSD = 0
+    pensions = Account.objects.filter(account_type = "pension") 
+    #a = Account.objects.filter(person__name = "david").exclude(account_type = "pension") | Account.objects.filter(person__name = "henri").exclude(account_type = "pension")
+    accounts_by_type = a.values('account_type').annotate(total_value=Sum('account_value'))
+    
+    return render(request, 'portfolio/summary.html', {
+      'total': total,
+      'totalvalue': totalvalue,
+      'USDGBP': USDGBP, 
+      'totalvalueUSD': (totalvalue * USDGBP),
+      'totalUSD': totalUSD, 
+      'pensions':pensions, 
+      'accounts_by_type': accounts_by_type, 
+      'updateTime': updateTime,
     }, )

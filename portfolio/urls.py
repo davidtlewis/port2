@@ -4,6 +4,7 @@ from portfolio.views import StockListView, PriceListView, TransactionListView, T
 
 urlpatterns = [
     path("", views.summary, name="index"),
+    path("summaryold", views.summary_old, name="index_old"),
     path("report", views.detailed_summary, name="detail"),
     path("stocks/", StockListView.as_view(), name='stocks'),
     path("stockvolumes/", views.StockVolumesView, name='stockvolumes'),
