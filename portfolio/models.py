@@ -222,7 +222,8 @@ class Stock(models.Model):
                     #maybe use uniqueness of data to stop duplicate being added.
                 if len(columns) == 2:
                     #save div record
-                    amount_text = columns[1].strong.text
+                    #amount_text = columns[1].strong.text
+                    amount_text = columns[1].span.text
                     div = Dividend(stock=self, date=datetime.strptime(columns[0].text.upper().replace("SEPT", "SEP"), '%d %b %Y'), amount=converttonumber(amount_text))
                     div.save()
             #get ready for next loop
