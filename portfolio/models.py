@@ -121,10 +121,12 @@ class Stock(models.Model):
             if self.stock_type == 'etfs' or self.stock_type =='curr':
                 #scrapped_element =  soup.find("fin-streamer", attrs={"data-reactid": "29"})
                 scrapped_element =  soup.find("fin-streamer", attrs={"data-symbol": self.yahoo_code, "data-field": 'regularMarketPrice'})
+                
                 if scrapped_element is not None:
                         scrapped_current_price = scrapped_element.string
                         current_price = locale.atof(scrapped_current_price)
                 else:
+                    print(soup)
                     print("!!!WARNING: Scrape fail")
                     scrapped_current_price = ""
                     current_price = self.current_price
