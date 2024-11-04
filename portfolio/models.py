@@ -77,6 +77,12 @@ class Stock(models.Model):
         ('europe', 'EUROPE'),
     )
     stock_region = models.CharField(max_length=6, choices=STOCK_REGION, default='world')
+    SCRAPER_SOURCE = (
+        ('ft', 'ft'),
+        ('yahoo', 'yahoo'),
+    )
+    scraper_source = models.CharField(max_length=5, choices=SCRAPER_SOURCE, default='ft')
+    
     active = models.BooleanField(default=True)
     current_price = models.DecimalField(max_digits=7, decimal_places=4)
     price_updated = models.DateTimeField(null=True)
@@ -101,27 +107,23 @@ class Stock(models.Model):
         # locale.setlocale(locale.LC_ALL, 'en_GB.utf8')
         # locale.setlocale(locale.LC_ALL, '')
         # self.current_price = 0
-        if self.code != "none" and self.active==True:
-            baseurl1 = "https://markets.ft.com/data/"
-            baseurl2 = {
-                "etfs":"etfs/tearsheet/performance?s=",
-                "fund":"funds/tearsheet/performance?s=",
-                "equity":"equities/tearsheet/summary?s=",
-                "curr":"currencies/tearsheet/summary?s="
-            }
-            url = baseurl1 + baseurl2[self.stock_type] + self.code
-            if self.stock_type == 'etfs' or self.stock_type =='curr':
-                url = "https://finance.yahoo.com/quote/" + self.yahoo_code
-            session = HTMLSession() # trying new library to get more reliable scrapes
-            print(f"Calling URL: {url}")
-            page = session.get(url)
-            #page = requests.get(url)
-            contents = page.content
-            soup = BeautifulSoup(contents, 'html.parser')
-            if self.stock_type == 'etfs' or self.stock_type =='curr':
-                #scrapped_element =  soup.find("fin-streamer", attrs={"data-reactid": "29"})
-                scrapped_element =  soup.find("fin-streamer", attrs={"data-symbol": self.yahoo_code, "data-field": 'regularMarketPrice'})
-                
+        if self.active==True and self.code != 'none':
+            print(f"Refreshing  {self.nickname}.")
+            if self.scraper_source == 'ft':
+                baseurl1 = "https://markets.ft.com/data/"
+                baseurl2 = {
+                    "etfs":"etfs/tearsheet/performance?s=",
+                    "fund":"funds/tearsheet/performance?s=",
+                    "equity":"equities/tearsheet/summary?s=",
+                    "curr":"currencies/tearsheet/summary?s="
+                }
+                url = baseurl1 + baseurl2[self.stock_type] + self.code
+                session = HTMLSession() # trying new library to get more reliable scrapes
+                print(f"Calling URL: {url}")
+                page = session.get(url)
+                contents = page.content
+                soup = BeautifulSoup(contents, 'html.parser')
+                scrapped_element = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
                 if scrapped_element is not None:
                         scrapped_current_price = scrapped_element.string
                         current_price = locale.atof(scrapped_current_price)
@@ -131,15 +133,28 @@ class Stock(models.Model):
                     scrapped_current_price = ""
                     current_price = self.current_price
             else:
-                scrapped_current_price = soup.find_all("span", class_='mod-ui-data-list__value')[0].string
-                current_price = locale.atof(scrapped_current_price)
-            #current_price = float(scrapped_current_price)
+                # if self.stock_type == 'etfs' or self.stock_type =='curr':
+                url = "https://finance.yahoo.com/quote/" + self.yahoo_code
+                session = HTMLSession() # trying new library to get more reliable scrapes
+                print(f"Calling URL: {url}")
+                page = session.get(url)
+                contents = page.content
+                soup = BeautifulSoup(contents, 'html.parser')
+                #scrapped_element =  soup.find("fin-streamer", attrs={"data-reactid": "29"})
+                scrapped_element =  soup.find("fin-streamer", attrs={"data-symbol": self.yahoo_code, "data-field": 'regularMarketPrice'})
+                if scrapped_element is not None:
+                        scrapped_current_price = scrapped_element.string
+                        current_price = locale.atof(scrapped_current_price)
+                else:
+                    print(soup)
+                    print("!!!WARNING: Scrape fail")
+                    scrapped_current_price = ""
+                    current_price = self.current_price
             print(f"Calling URL: {url}. Returned string value {scrapped_current_price}.")
             if self.currency == 'gbx':
                 current_price = current_price / 100
             self.current_price = current_price
             self.price_updated = timezone.now()
-            #self.price_updated = datetime.now()
             self.save()
         #now to refresh  holdings which contain this stock
         related_holdings = Holding.objects.filter(stock=self)

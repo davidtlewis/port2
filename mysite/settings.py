@@ -25,7 +25,7 @@ SECRET_KEY = '4n63e7wpm@knc6v1h^45t812+=e@z%l_s^p8)^s(#45)6*4kz2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.231','oddjob','127.0.0.1','portfolio.dtlewis.com']
+ALLOWED_HOSTS = ['192.168.1.231','oddjob','127.0.0.1','portfolio.dtlewis.com','localhost',]
 
 USE_THOUSAND_SEPARATOR = True
 
