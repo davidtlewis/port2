@@ -1,5 +1,6 @@
 {% extends 'portfolio/base.html' %}
 {% load tz %}
+{% load static %}
 {% block content %}
 <h1>Summary at {{updateTime}}</h1>
 <h2>total: {{ totalvalue |floatformat:0 }}</h2>
@@ -17,6 +18,9 @@
     {{pensions.2.account_value}}<br>
 
 </div>
+
+<button id="refresh-button" class="btn btn-primary">Refresh Prices</button>
+<div id="progress-display" style="margin-top: 10px; color: #666;">Click the button above to refresh stock prices.</div>
 
 <a href="https://www.avivamymoney.co.uk/" target="_blank"> Henri Pension</a>
 |
@@ -48,5 +52,5 @@
         window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
     }
 </script>
-
+<script src="{% static 'js/refresh.js' %}"></script>
 {% endblock %}
